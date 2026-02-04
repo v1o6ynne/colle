@@ -7,26 +7,126 @@
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body, html { height: 100%; overflow: hidden; font-family: sans-serif; }
+
+body, html { 
+    height: 100%; 
+    overflow: hidden; 
+    font-family: sans-serif; 
+}
 
 .app-container { display: flex; height: 100vh; width: 100vw; background: white; }
 
-/* 侧栏 */
-.side-nav { width: 60px; border-right: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: center; padding: 20px 0; }
-.logo { color: var(--primary-red); font-size: 24px; font-weight: bold; margin-bottom: 40px; }
-.nav-icons svg { margin-bottom: 30px; color: #ccc; cursor: pointer; }
-.nav-icons svg.active { color: var(--primary-red); }
+/*side */
+.side-nav { 
+    width: 60px; 
+    border-right: 1px solid var(--border-color); 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    padding: 20px 0; 
+}
 
-/* PDF 面板 */
-.pdf-panel { flex: 1; display: flex; flex-direction: column; position: relative; }
-.custom-toolbar { height: 48px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; padding: 0 20px; font-size: 14px; }
-#viewerContainer { position: absolute; top: 48px; bottom: 0; left: 0; right: 0; overflow-y: auto; background: var(--bg-gray); padding: 20px 0; }
+.logo { 
+    color: var(--primary-red); 
+    font-size: 24px; 
+    font-weight: bold; 
+    margin-bottom: 40px; 
+}
 
-/* 核心对齐补丁 */
-.pdf-document { display: flex; flex-direction: column; align-items: center; }
+.nav-icons svg { 
+    margin-left: auto;
+    margin-bottom: 10px; 
+    color: #ccc; 
+    cursor: pointer; 
+}
+
+.nav-icons svg.active { 
+    color: var(--primary-red); 
+    scale: 1.2;
+}
+
+/* PDF panel] */
+.pdf-panel { 
+    flex: 1; 
+    display: flex; 
+    flex-direction: column; 
+}
+.custom-toolbar { 
+    height: 56px; 
+    border-bottom: 1px solid var(--border-color); 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    padding: 0 20px; 
+    font-size: 14px; 
+    flex-shrink: 0;
+    gap: 15px;
+}
+
+.file-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-main);
+}
+
+.file-name {
+    font-weight: 600;
+}
+
+.page-count {
+    color: var(--text-light);
+    font-size: 13px;
+}
+
+.toolbar-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.toolbar-controls svg {
+    color: var(--text-light);
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.btn-copy,
+.btn-download {
+    background: none;
+    border: 1px solid var(--border-color);
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 13px;
+    cursor: pointer;
+    color: var(--text-main);
+    white-space: nowrap;
+    transition: all 0.2s;
+}
+
+.btn-copy:hover,
+.btn-download:hover {
+    background: var(--bg-gray);
+    border-color: var(--primary-red);
+    color: var(--primary-red);
+}
+
+#viewerContainer { 
+    flex: 1; 
+    overflow-y: auto; 
+    background: var(--bg-gray); 
+    padding: 20px 0; 
+}
+
+
+.pdf-document { 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+}
 
 .react-pdf__Page {
-    display: inline-block !important; /* 关键：防止容器被拉宽导致 textLayer 偏移 */
+    display: inline-block !important; 
     position: relative !important;
     margin-bottom: 20px;
     background-color: white;
@@ -37,24 +137,83 @@ body, html { height: 100%; overflow: hidden; font-family: sans-serif; }
     position: absolute !important;
     top: 0 !important;
     left: 0 !important;
-    line-height: 1.0 !important; /* 解决偏高问题 */
+    line-height: 1.0 !important; 
 }
 
 .react-pdf__Page__textContent span {
-    transform-origin: 0% 0% !important; /* 解决变短问题 */
-    white-space: pre;
-    color: transparent; /* 调试时可设为 rgba(255,0,0,0.2) */
+    transform-origin: 0% 0% !important; 
+    color: transparent ; /* 调试时可设为  rgba(255,0,0,0.8)*/
 }
 
-/* 聊天面板 */
-.chat-panel { width: 35%; border-left: 1px solid var(--border-color); display: flex; flex-direction: column; background: white; }
-.chat-header { height: 48px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; padding: 0 20px; }
-.tab { margin-right: 20px; font-size: 14px; color: var(--text-light); cursor: pointer; }
-.tab.active { color: black; font-weight: bold; border-bottom: 2px solid var(--primary-red); padding-bottom: 2px; }
-.chat-content { flex: 1; padding: 20px; overflow-y: auto; }
-.chat-input-area { padding: 20px; border-top: 1px solid var(--border-color); }
-.input-container { background: #f9f9f9; border-radius: 20px; padding: 8px 15px; display: flex; align-items: center; border: 1px solid #eee; }
-.input-container textarea { flex: 1; border: none; outline: none; background: transparent; resize: none; font-size: 14px; }
-.send-btn { background: var(--primary-red); color: white; border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+/* chat panel */
+.chat-panel { 
+    width: 380px; 
+    border-left: 1px solid var(--border-color); 
+    display: flex; 
+    flex-direction: column; 
+    background: white; 
+    flex-shrink: 0;
+}
+.chat-header { 
+    height: 48px; 
+    border-bottom: 1px solid var(--border-color); 
+    display: flex; 
+    align-items: center; 
+    padding: 0 20px; 
+}
+.tab { 
+    margin-right: 20px; 
+    font-size: 14px; 
+    color: var(--text-light); 
+    cursor: pointer; 
+}
+.tab.active { 
+    color: black; 
+    font-weight: bold; 
+    border-bottom: 2px solid var(--primary-red); 
+    padding-bottom: 2px; 
+}
+.chat-content { 
+    flex: 1; 
+    padding: 20px; 
+    overflow-y: auto; 
+}
+.chat-input-area { 
+    padding: 20px; 
+    border-top: 1px solid var(--border-color); 
+}
+.input-container { 
+    background: #f9f9f9; 
+    border-radius: 20px; 
+    padding: 8px 15px; 
+    display: flex; 
+    align-items: center; 
+    border: 1px solid #eee; 
+}
+.input-container textarea { 
+    flex: 1; 
+    border: none; 
+    outline: none; 
+    background: transparent; 
+    resize: none; 
+    font-size: 14px; 
+}
+.send-btn { 
+    background: var(--primary-red); 
+    color: white; 
+    border: none; 
+    width: 30px; 
+    height: 30px; 
+    border-radius: 50%; 
+    cursor: pointer; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+}
 
-.divider { width: 1px; height: 20px; background: var(--border-color); margin: 0 10px; }
+.divider { 
+    width: 1px; 
+    height: 20px; 
+    background: var(--border-color); 
+    margin: 0 10px; 
+}
