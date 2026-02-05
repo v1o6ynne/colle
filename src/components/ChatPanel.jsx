@@ -1,7 +1,13 @@
 import React from 'react';
 import { ArrowUp, Highlighter } from 'lucide-react';
 
-export default function ChatPanel({ inputText, setInputText, mode, selectedText }) {
+export default function ChatPanel({ 
+    inputText, 
+    setInputText, 
+    mode, 
+    selectedText,
+    screenshotImage
+}) {
     return (
         <aside className="chat-panel">
             <header className="chat-header">
@@ -25,10 +31,15 @@ export default function ChatPanel({ inputText, setInputText, mode, selectedText 
             </div>
 
             <div className="chat-input-area">
-                {mode === 'copy' && selectedText && (
+                {selectedText && (
                     <div className="selected-text-box">
                         <strong>Selected:</strong>
                         <p>{selectedText}</p>
+                    </div>
+                )}
+                {screenshotImage && (
+                    <div className="screenshot-preview-box">
+                        <img src={screenshotImage} alt="Screenshot" />
                     </div>
                 )}
                 <div className="input-container">

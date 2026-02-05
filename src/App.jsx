@@ -9,6 +9,7 @@ export default function AcademicAssistant() {
     const [inputText, setInputText] = useState('');
     const [mode, setMode] = useState(null);
     const [selectedText, setSelectedText] = useState('');
+    const [screenshotImage, setScreenshotImage] = useState('');
 
     const handleCopySelection = (cleanedText) => {
         setSelectedText(cleanedText);
@@ -18,11 +19,27 @@ export default function AcademicAssistant() {
         setMode(newMode);
     };
 
+    const handleTempScreenshot = (imageData) => {
+        // Auto-confirm screenshot, no manual buttons
+        setScreenshotImage(imageData);
+    };
+
     return (
         <div className="app-container">
             <Sidebar />
-            <PaperPanel onCopySelection={handleCopySelection} onModeChange={handleModeChange} />
-            <ChatPanel inputText={inputText} setInputText={setInputText} mode={mode} selectedText={selectedText} />
+            <PaperPanel 
+                mode={mode}
+                onCopySelection={handleCopySelection} 
+                onModeChange={handleModeChange}
+                onTempScreenshot={handleTempScreenshot}
+            />
+            <ChatPanel 
+                inputText={inputText} 
+                setInputText={setInputText} 
+                mode={mode} 
+                selectedText={selectedText}
+                screenshotImage={screenshotImage}
+            />
         </div>
     );
 }
