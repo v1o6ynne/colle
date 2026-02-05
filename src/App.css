@@ -92,6 +92,29 @@ body, html {
     flex-shrink: 0;
 }
 
+.icon-btn {
+    background: none;
+    border: none;
+    color: var(--text-light);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.icon-btn:hover {
+    background: var(--bg-gray);
+    color: var(--primary-red);
+}
+
+.icon-btn.active {
+    background: var(--primary-red);
+    color: white;
+}
+
 .btn-copy,
 .btn-download {
     background: none;
@@ -184,6 +207,32 @@ body, html {
 .chat-input-area { 
     padding: 20px; 
     border-top: 1px solid var(--border-color); 
+}
+
+.selected-text-box {
+    background: #f0f7ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 6px;
+    padding: 12px;
+    margin-bottom: 12px;
+    max-height: 80px;
+    overflow-y: auto;
+}
+
+.selected-text-box strong {
+    color: var(--primary-red);
+    display: block;
+    margin-bottom: 6px;
+    font-size: 12px;
+    text-transform: uppercase;
+}
+
+.selected-text-box p {
+    color: var(--text-main);
+    font-size: 13px;
+    line-height: 1.4;
+    margin: 0;
+    word-break: break-word;
 }
 .input-container { 
     background: #f9f9f9; 

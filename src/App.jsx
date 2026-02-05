@@ -7,16 +7,22 @@ import './App.css';
 
 export default function AcademicAssistant() {
     const [inputText, setInputText] = useState('');
+    const [mode, setMode] = useState(null);
+    const [selectedText, setSelectedText] = useState('');
 
     const handleCopySelection = (cleanedText) => {
-        setInputText((prev) => prev + `"${cleanedText}" `);
+        setSelectedText(cleanedText);
+    };
+
+    const handleModeChange = (newMode) => {
+        setMode(newMode);
     };
 
     return (
         <div className="app-container">
             <Sidebar />
-            <PaperPanel onCopySelection={handleCopySelection} />
-            <ChatPanel inputText={inputText} setInputText={setInputText} />
+            <PaperPanel onCopySelection={handleCopySelection} onModeChange={handleModeChange} />
+            <ChatPanel inputText={inputText} setInputText={setInputText} mode={mode} selectedText={selectedText} />
         </div>
     );
 }

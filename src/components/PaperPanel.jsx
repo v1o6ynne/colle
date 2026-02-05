@@ -9,10 +9,11 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   import.meta.url,
 ).toString();
 
-export default function PaperPanel({ onCopySelection }) {
+export default function PaperPanel({ onCopySelection, onModeChange }) {
     const [file] = useState('./2208.11144v1.pdf'); 
     const [numPages, setNumPages] = useState(null);
     const [containerWidth, setContainerWidth] = useState(800);
+    const [mode, setMode] = useState(null);
     const containerRef = useRef(null);
 
     const options = useMemo(() => ({
@@ -33,6 +34,22 @@ export default function PaperPanel({ onCopySelection }) {
         return () => resizeObserver.disconnect();
     }, []);
 
+    // handle text selection in copy mode
+    useEffect(() => {
+        if (mode !== 'copy') return;
+
+        const handleTextSelection = () => {
+            const sel = window.getSelection();
+            if (sel && sel.toString().length > 0) {
+                const cleanedText = sel.toString().replace(/\s+/g, ' ').trim();
+                onCopySelection(cleanedText);
+            }
+        };
+
+        document.addEventListener('mouseup', handleTextSelection);
+        return () => document.removeEventListener('mouseup', handleTextSelection);
+    }, [mode, onCopySelection]);
+
     // handle copy selected text
     const handleCopySelection = () => {
         const sel = window.getSelection();
@@ -43,8 +60,15 @@ export default function PaperPanel({ onCopySelection }) {
     };
 
     return (
-        <main className="pdf-panel" ref={containerRef}>
-            <Toolbar numPages={numPages} onCopySelection={handleCopySelection} />
+        <main className="pdf-panel" ref={containerRef} data-mode={mode}>
+            <Toolbar 
+                numPages={numPages} 
+                mode={mode} 
+                onModeChange={(newMode) => {
+                    setMode(newMode);
+                    onModeChange?.(newMode);
+                }} 
+            />
             <PdfViewer 
                 file={file}
                 numPages={numPages}
