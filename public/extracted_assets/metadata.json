@@ -1,0 +1,347 @@
+[
+    {
+        "id": "p1_i0_181",
+        "url": "/extracted_assets/p1_1_181.png",
+        "page": 1,
+        "width": 3600,
+        "height": 1200,
+        "bbox": [
+            63.95643997192383,
+            511.2268371582031,
+            151.9582061767578,
+            519.2269897460938
+        ],
+        "detectedCaption": "xingyuliu@ucla.edu Xiang ‘ Los xa \u0018\u001e\u0019\r\u0017\u0015\u000b\u000f\u0012 \u000e\u0019\u0018\u0013\u0013\u0015\u0014\u0014\u0012\u0011\u0012\u0010\u0012\u000f\u000e\u0019\r\u0014\u0014\f\u0015\u0014 \u0002\u0015\u0001\u0015\u000b\u000f\u0019\u0018\f\u0017\u0012\u0005 \u0002\u0015\u0001\u0015\u000b\u000f\u0019\u0006\u0012\u0017\u0015\u0005 Aug 2022",
+        "type": "figure"
+    },
+    {
+        "id": "p1_i1_182",
+        "url": "/extracted_assets/p1_2_182.png",
+        "page": 1,
+        "width": 919,
+        "height": 520,
+        "bbox": [
+            190.958984375,
+            472.5350646972656,
+            216.65576171875,
+            487.07513427734375
+        ],
+        "detectedCaption": "UCLA Los Angeles, USA xac@ucla.edu \u0017\u000b \u001a\u001e\u0019\u0018\u0017 \u0011\u0012\u0010\u0012\u000f\u000e\u0019\r\u0014\u0014\f\u0015\u0014 \u0002\u0015\u0001\u0015\u000b\u000f\u0019\u0006\u0012\u0017\u0015\u0005",
+        "type": "figure"
+    },
+    {
+        "id": "p1_i2_183",
+        "url": "/extracted_assets/p1_3_183.png",
+        "page": 1,
+        "width": 2644,
+        "height": 1696,
+        "bbox": [
+            247.9601287841797,
+            422.2738037109375,
+            402.9632263183594,
+            521.700927734375
+        ],
+        "detectedCaption": "violynne@ucla.edu dinli ‘Anthony’ Chen UCLA s Angeles, USA xac@ucla.edu Amy Pavel The University of Texas at Austin Austin, USA apavel@cs.utexas.edu \u001a\u001e\u0019\u0018\u0017\u0017\u0016\u0015\u0014\u0014\u0019\u0018\u0013\u0013\u0015\u0014\u0014\u0012\u0011\u0012\u0010\u0012\u000f\u000e\u0019\r\u0014\u0014\f\u0015\u0014 \t\u001e\u0019\b",
+        "type": "figure"
+    },
+    {
+        "id": "p1_i3_184",
+        "url": "/extracted_assets/p1_4_184.png",
+        "page": 1,
+        "width": 903,
+        "height": 449,
+        "bbox": [
+            435.7879943847656,
+            464.8952941894531,
+            550.0317993164062,
+            521.7008972167969
+        ],
+        "detectedCaption": "dinli@adobe.com Pavel of Texas at Austin n, USA s.utexas.edu \t\u001e\u0019\b\u0010\u0007\u000e\u0019\u0018\u0013\u0013\u0015\u0014\u0014\u0012\u0011\u0010\u0015\u0019\u0006\u0012\u0017\u0015\u0005",
+        "type": "figure"
+    },
+    {
+        "id": "p1_i4_185",
+        "url": "/extracted_assets/p1_5_185.png",
+        "page": 1,
+        "width": 1062,
+        "height": 594,
+        "bbox": [
+            190.95896911621094,
+            421.2250671386719,
+            216.65574645996094,
+            435.59783935546875
+        ],
+        "detectedCaption": "\u001b \u0013\u0017\u000b\u0013 \f\u0013 \u001c\u0013 \u001a\u001e\u0019\u0018\u0017 \u0011\u0012\u0010\u0012\u000f\u000e\u0019\r\u0014\u0014\f\u0015\u0014 \u0002\u0015\u0001\u0015\u000b\u000f\u0019\u0006\u0012\u0017\u0015\u0005",
+        "type": "figure"
+    },
+    {
+        "id": "p1_i5_186",
+        "url": "/extracted_assets/p1_6_186.png",
+        "page": 1,
+        "width": 1070,
+        "height": 606,
+        "bbox": [
+            191.1200714111328,
+            455.3970947265625,
+            216.8168487548828,
+            469.9505920410156
+        ],
+        "detectedCaption": "Los Angeles, USA xac@ucla.edu \u001f\u001e\u001d \u0013\u0017\u000b\u0013 \f\u0013 \u001a\u001e\u0019\u0018\u0017 \u0011\u0012\u0010\u0012\u000f\u000e\u0019\r\u0014\u0014\f\u0015\u0014 \u0002\u0015\u0001\u0015\u000b\u000f\u0019\u0006\u0012\u0017\u0015\u0005",
+        "type": "figure"
+    },
+    {
+        "id": "p1_i6_187",
+        "url": "/extracted_assets/p1_7_187.png",
+        "page": 1,
+        "width": 1068,
+        "height": 606,
+        "bbox": [
+            191.1200714111328,
+            489.64593505859375,
+            216.8168487548828,
+            504.2266845703125
+        ],
+        "detectedCaption": "Xiang ‘Anthony’ Ch UCLA Los Angeles, USA xac@ucla.edu \u001a\u001e\u0019\u0018\u0017 \u0011\u0012\u0010\u0012\u000f\u000e\u0019\r\u0014\u0014\f\u0015\u0014 \u0002\u0015\u0001\u0015\u000b\u000f\u0019\u0006\u0012\u0017\u0015\u0005",
+        "type": "figure"
+    },
+    {
+        "id": "p1_i7_188",
+        "url": "/extracted_assets/p1_8_188.png",
+        "page": 1,
+        "width": 744,
+        "height": 430,
+        "bbox": [
+            191.32838439941406,
+            438.1410217285156,
+            216.7977752685547,
+            452.8612365722656
+        ],
+        "detectedCaption": "\u001b \u0017\u000b\u0013 \f\u0013 \u001c\u0013 \u001a\u001e\u0019\u0018\u0017 \u0011\u0012\u0010\u0012\u000f\u000e\u0019\r\u0014\u0014\f\u0015\u0014 \u0002\u0015\u0001\u0015\u000b\u000f\u0019\u0006\u0012\u0017\u0015\u0005",
+        "type": "figure"
+    },
+    {
+        "id": "p1_i8_185",
+        "url": "/extracted_assets/p1_9_185.png",
+        "page": 1,
+        "width": 1062,
+        "height": 594,
+        "bbox": [
+            190.95896911621094,
+            421.2250671386719,
+            216.65574645996094,
+            435.59783935546875
+        ],
+        "detectedCaption": "\u001b \u0013\u0017\u000b\u0013 \f\u0013 \u001c\u0013 \u001a\u001e\u0019\u0018\u0017 \u0011\u0012\u0010\u0012\u000f\u000e\u0019\r\u0014\u0014\f\u0015\u0014 \u0002\u0015\u0001\u0015\u000b\u000f\u0019\u0006\u0012\u0017\u0015\u0005",
+        "type": "figure"
+    },
+    {
+        "id": "p1_i9_186",
+        "url": "/extracted_assets/p1_10_186.png",
+        "page": 1,
+        "width": 1070,
+        "height": 606,
+        "bbox": [
+            191.1200714111328,
+            455.3970947265625,
+            216.8168487548828,
+            469.9505920410156
+        ],
+        "detectedCaption": "Los Angeles, USA xac@ucla.edu \u001f\u001e\u001d \u0013\u0017\u000b\u0013 \f\u0013 \u001a\u001e\u0019\u0018\u0017 \u0011\u0012\u0010\u0012\u000f\u000e\u0019\r\u0014\u0014\f\u0015\u0014 \u0002\u0015\u0001\u0015\u000b\u000f\u0019\u0006\u0012\u0017\u0015\u0005",
+        "type": "figure"
+    },
+    {
+        "id": "p1_i10_182",
+        "url": "/extracted_assets/p1_11_182.png",
+        "page": 1,
+        "width": 919,
+        "height": 520,
+        "bbox": [
+            190.958984375,
+            472.5350646972656,
+            216.65576171875,
+            487.07513427734375
+        ],
+        "detectedCaption": "UCLA Los Angeles, USA xac@ucla.edu \u0017\u000b \u001a\u001e\u0019\u0018\u0017 \u0011\u0012\u0010\u0012\u000f\u000e\u0019\r\u0014\u0014\f\u0015\u0014 \u0002\u0015\u0001\u0015\u000b\u000f\u0019\u0006\u0012\u0017\u0015\u0005",
+        "type": "figure"
+    },
+    {
+        "id": "p1_i11_187",
+        "url": "/extracted_assets/p1_12_187.png",
+        "page": 1,
+        "width": 1068,
+        "height": 606,
+        "bbox": [
+            191.1200714111328,
+            489.64593505859375,
+            216.8168487548828,
+            504.2266845703125
+        ],
+        "detectedCaption": "Xiang ‘Anthony’ Ch UCLA Los Angeles, USA xac@ucla.edu \u001a\u001e\u0019\u0018\u0017 \u0011\u0012\u0010\u0012\u000f\u000e\u0019\r\u0014\u0014\f\u0015\u0014 \u0002\u0015\u0001\u0015\u000b\u000f\u0019\u0006\u0012\u0017\u0015\u0005",
+        "type": "figure"
+    },
+    {
+        "id": "p3_i0_407",
+        "url": "/extracted_assets/p3_1_407.png",
+        "page": 3,
+        "width": 2872,
+        "height": 1202,
+        "bbox": [
+            70.31591796875,
+            501.64898681640625,
+            548.8310546875,
+            701.9189147949219
+        ],
+        "detectedCaption": "Figure 2: In CrossA11y’s interface, the video pane (A) displays audio and visual timelines with accessibility visualization that allows authors to quickly identify and navigate to accessibility issues",
+        "type": "figure"
+    },
+    {
+        "id": "p3_i2_417",
+        "url": "/extracted_assets/p3_3_417.png",
+        "page": 3,
+        "width": 1519,
+        "height": 648,
+        "bbox": [
+            66.86078643798828,
+            495.8264465332031,
+            552.8192749023438,
+            703.1346130371094
+        ],
+        "detectedCaption": "Figure 2: In CrossA11y’s interface, the video pane (A) displays audio and visual timelines with accessibility visualization that allows authors to quickly identify and navigate to accessibility issues",
+        "type": "figure"
+    },
+    {
+        "id": "p4_i0_535",
+        "url": "/extracted_assets/p4_1_535.png",
+        "page": 4,
+        "width": 868,
+        "height": 324,
+        "bbox": [
+            89.83584594726562,
+            643.1168670654297,
+            257.9365234375,
+            705.8641204833984
+        ],
+        "detectedCaption": "Figure 3: Authors can hover on segments of visual/audio timelines in CrossA11y to inspect the computed correspon- dence between the selected segment and segments in the other modality. Here, opaque se",
+        "type": "figure"
+    },
+    {
+        "id": "p4_i1_536",
+        "url": "/extracted_assets/p4_2_536.png",
+        "page": 4,
+        "width": 694,
+        "height": 854,
+        "bbox": [
+            138.76443481445312,
+            631.098876953125,
+            155.82383728027344,
+            652.0912780761719
+        ],
+        "detectedCaption": "ctober 29-November 2, 2022, Bend, OR, US",
+        "type": "figure"
+    },
+    {
+        "id": "p4_i4_558",
+        "url": "/extracted_assets/p4_5_558.png",
+        "page": 4,
+        "width": 744,
+        "height": 430,
+        "bbox": [
+            317.95489501953125,
+            647.79296875,
+            408.0572204589844,
+            699.8682327270508
+        ],
+        "detectedCaption": "Xingyu “Bruce” Liu, Ruolin Wang, Dingzeyu Li, Xian",
+        "type": "figure"
+    },
+    {
+        "id": "p4_i5_559",
+        "url": "/extracted_assets/p4_6_559.png",
+        "page": 4,
+        "width": 788,
+        "height": 316,
+        "bbox": [
+            317.9550476074219,
+            603.1800384521484,
+            408.057373046875,
+            639.3124389648438
+        ],
+        "detectedCaption": "Xingyu “Bruce” Liu, Ruolin Wang, Dingzeyu Li, Xian",
+        "type": "figure"
+    },
+    {
+        "id": "p4_i6_560",
+        "url": "/extracted_assets/p4_7_560.png",
+        "page": 4,
+        "width": 1052,
+        "height": 222,
+        "bbox": [
+            425.9021301269531,
+            612.7012939453125,
+            544.380859375,
+            637.7034606933594
+        ],
+        "detectedCaption": "uolin Wang, Dingzeyu Li, Xiang ‘Anthony’ Chen, and Amy Pavel A",
+        "type": "figure"
+    },
+    {
+        "id": "p4_i8_562",
+        "url": "/extracted_assets/p4_9_562.png",
+        "page": 4,
+        "width": 694,
+        "height": 854,
+        "bbox": [
+            138.76443481445312,
+            631.098876953125,
+            155.82383728027344,
+            652.0912780761719
+        ],
+        "detectedCaption": "ctober 29-November 2, 2022, Bend, OR, US",
+        "type": "figure"
+    },
+    {
+        "id": "p4_i9_562",
+        "url": "/extracted_assets/p4_10_562.png",
+        "page": 4,
+        "width": 694,
+        "height": 854,
+        "bbox": [
+            138.76443481445312,
+            631.098876953125,
+            155.82383728027344,
+            652.0912780761719
+        ],
+        "detectedCaption": "ctober 29-November 2, 2022, Bend, OR, US",
+        "type": "figure"
+    },
+    {
+        "id": "p8_i0_751",
+        "url": "/extracted_assets/p8_1_751.png",
+        "page": 8,
+        "width": 3182,
+        "height": 1652,
+        "bbox": [
+            56.39374923706055,
+            581.6198120117188,
+            291.4480895996094,
+            703.6530609130859
+        ],
+        "detectedCaption": "Figure 7: Interface 1 does not provide any accessibility infor- mation or modality asymmetry visualization. rendered the four videos on CrossA11y’s interface. Additionally, we created Interface 1 (Fig",
+        "type": "figure"
+    },
+    {
+        "id": "p8_i1_758",
+        "url": "/extracted_assets/p8_2_758.png",
+        "page": 8,
+        "width": 1634,
+        "height": 869,
+        "bbox": [
+            54.26680374145508,
+            577.3589477539062,
+            295.6739807128906,
+            705.7450103759766
+        ],
+        "detectedCaption": "Figure 7: Interface 1 does not provide any accessibility infor- mation or modality asymmetry visualization. rendered the four videos on CrossA11y’s interface. Additionally, we created Interface 1 (Fig",
+        "type": "figure"
+    }
+]
