@@ -1,0 +1,108 @@
+{
+  "dataset": [
+    {
+      "image": [
+        "https://dl.acm.org/cms/attachment/html/10.1145/3526113.3545703/assets/html/images/uist22-91-fig3.jpg"
+      ],
+      "caption": [
+        "Authors can hover on segments of visual/audio timelines in CrossA11y to inspect the computed correspondence between the selected segment and segments in the other modality. Here, opaque segments in the audio track are the segments predicted by the system to match the segment in the video track."
+      ],
+      "text":[],
+      "questions": [
+        "No questions defined for this image.",
+        "[questions(descriptive):1]\nWhat color is used to represent the audio track in the figure?\n\n[questions(descriptive):2]\nWhat color is used to represent the visual track in the figure?\n\n[questions(descriptive):3]\nWhat action is being indicated by the cursor in the figure?\n\n[questions:4]\nIs there a distinct pattern or markers on the audio track that differs from the visual track?\n\n[questions:5]\nAre the intensities of the audio and visual tracks represented by variations in color saturation or brightness?",
+        "[questions(descriptive):1]\nWhat color is used to represent the audio track in the figure?\n\n[questions(descriptive):2]\nWhat color is used to represent the visual track in the figure?\n\n[questions(descriptive):3]\nWhat action is being indicated by the cursor in the figure?\n\n[questions:4]\nIs there a distinct pattern or markers on the audio track that differs from the visual track?\n\n[questions:5]\nAre the intensities of the audio and visual tracks represented by variations in color saturation or brightness?"
+      ],
+      "questions_customized": [
+        "No questions from the user defined for this image.",
+        "No questions from the user defined for this image."
+      ],
+      "answers": [
+        "No answers to generated questions defined for this image.",
+        "No answers to generated questions defined for this image."
+      ],
+      "preference": [
+        "No preference or request defined for this image.",
+        "No preference or request defined for this image."
+      ],
+      "note": [
+        "No note defined for this image.",
+        "No note defined for this image"
+      ],
+      "summary": [
+        "No summary defined for this image.",
+        "No summary defined for this image.",
+        "The provided figure depicts two separate tracks, one for audio and one for visuals. The audio track is represented in gray, with some portions highlighted in a lighter shade to possibly denote varying intensities or sections. The visual track is shown below it, with some parts highlighted in red, again possibly indicating different intensities or segments of visual information. The tracks are aligned horizontally, and a cursor symbolized by a hand icon appears to interact with the visual track, presumably to edit or select a section. Although the actual actions of the cursor are unclear without context, it generally indicates direct manipulation of the content on the visual track. There are no distinct markers that differ between the audio and visual tracks, but variations in color saturation or brightness suggest a representation of intensity or other attributes within each track."
+      ],
+      "subfigureJSON": [
+        "[{\"x\":0, \"y\":0, \"width\":0, \"height\":0, \"annotation\":\"\"}]",
+        "[{\"x\":0, \"y\":0, \"width\":0, \"height\":0, \"annotation\":\"\"}]",
+        "[{\"x\":0, \"y\":0, \"width\":0, \"height\":0, \"annotation\":\"\"}]"
+      ]
+    },
+    {
+      "image": [
+        "https://dl.acm.org/cms/attachment/html/10.1145/3526113.3545703/assets/html/images/uist22-91-fig4.jpg"
+      ],
+      "caption": [
+        "(A) After editing their description, authors can add the description to the video by clicking on \u201cSave\u201d. The vertical side bar and the horizontal bar of the corresponding segment will change to blue color, indicating that this problem has been addressed. (B) Authors can also dismiss a problem by clicking on \u201cDismiss\u201d. The bars will turn gray indicating that this problem has been dismissed."
+      ],
+      "text": [
+        "The video description pane (Figure\u00a02 F) lets address inaccessible visual segments by writing text descriptions of the visual content. Each video description segment consists of a vertical sidebar that is colored according to its predicted accessibility, an editable text field where an author may add descriptions, and \u201csave\u201d/\u201cedit\u201d and \u201cdismiss\u201d buttons to address or ignore surfaced visual accessibility issues. Video description segments are relatively aligned with the caption segments in the captions pane such that authors can preview the nearby narration. The height of each video description segment represents its relative length such that authors can estimate the approximate length of description required."
+      ],
+      "questions": [
+        "No questions defined for this image.",
+        "1: [What color is used in the figure to indicate the predicted accessibility of each video description segment? (descriptive)]\n2: [How can authors preview the nearby narration in relation to the video description segments? (descriptive)]\n3: [What do the heights of the video description segments represent and how does that inform the authors? (descriptive)]\n4: [What options do authors have for each video description segment as shown in the figure?]\n5: [How are the video description segments and caption segments shown in relation to each other according to the figure?]\n6: [What does the alignment of video description segments with caption segments suggest about the design intent? (descriptive)]\n7: [In the context of the figure, what is the purpose of the \"save\"/\"edit\" and \"dismiss\" buttons?]",
+        "1: [What color is used in the figure to indicate the predicted accessibility of each video description segment? (descriptive)]\n2: [How can authors preview the nearby narration in relation to the video description segments? (descriptive)]\n3: [What do the heights of the video description segments represent and how does that inform the authors? (descriptive)]\n4: [What options do authors have for each video description segment as shown in the figure?]\n5: [How are the video description segments and caption segments shown in relation to each other according to the figure?]\n6: [What does the alignment of video description segments with caption segments suggest about the design intent? (descriptive)]\n7: [In the context of the figure, what is the purpose of the \"save\"/\"edit\" and \"dismiss\" buttons?]"
+      ],
+      "questions_customized": [
+        "No questions from the user defined for this image.",
+        "No questions from the user defined for this image."
+      ],
+      "answers": [
+        "No answers to generated questions defined for this image.",
+        "No answers to generated questions defined for this image."
+      ],
+      "preference": [
+        "No preference or request defined for this image.",
+        "No preference or request defined for this image."
+      ],
+      "note": [
+        "No note defined for this image.",
+        "No note defined for this image"
+      ],
+      "summary": [
+        "No summary defined for this image.",
+        "No summary defined for this image.",
+        "Figure 2F illustrates a user interface for adding descriptions to video segments to improve accessibility. The interface features a vertical sidebar with color coding to indicate predicted accessibility; red for segments needing description and green for those sufficiently accessible. Attached is an editable text field for writing descriptions. \"Save\"/\"Edit\" buttons allow authors to confirm changes, whereas \"Dismiss\" can be used to overlook the suggestions. Video description segments are aligned with caption segments to facilitate correlation with the audio narration. The height of each segment represents its duration, guiding the authors on the length of the description needed."
+      ],
+      "subfigureJSON": [
+        "[{\"x\":0, \"y\":0, \"width\":0, \"height\":0, \"annotation\":\"\"}]",
+        "[{\"x\":0, \"y\":0, \"width\":0, \"height\":0, \"annotation\":\"\"}]",
+        "[{\"x\":0, \"y\":0, \"width\":0, \"height\":0, \"annotation\":\"\"}]"
+      ]
+    }
+  ],
+  "mainPageSpans": [
+    {
+      "text": "The video pane (Figure\u00a02 A) displays the video and lets authors play/pause the video and seek within the video using two timelines: (1) the audio timeline that lets authors navigate to auditorily inaccessible segments, and (2) the visual timeline that lets authors navigate to visually inaccessible segments. The audio timeline displays audio segments that each represent a segment with continuous speech, or non-speech sound. The visual timeline displays visual segments that each represent a segment of continuous footage (i.e., a shot). Each segment is colored with its estimated accessibility1 from gray (accessible) to red (inaccessible) using sRGB inverse gamma mixing. The darkness of the red represents the weighted sum of the similarity score of a segment to segments in the other modality. Using either timeline, authors can gain an overview of accessibility issues, or quickly navigate to an inaccessible segment by clicking on the segment to play the corresponding point in the video. For example, by clicking on the first red segment in the audio track (Figure\u00a02 C) an author will hear an inaccessible audio segment \u2014 music plays that is not available in the captions preview (Figure\u00a02 D). Authors may inspect inaccessibility prediction results displayed in the timeline by hovering over an audio or visual segment (Figure\u00a03) to see the audio segments that are predicted to match that segment (displayed with a higher opacity). As the author navigates and plays the video with the video pane, the corresponding segments are highlighted in the linked video description pane and the caption pane.",
+      "id": "highlight1",
+      "imageId": "image-1712511961890"
+    },
+    {
+      "text": "The video description pane (Figure\u00a02 F) lets address inaccessible visual segments by writing text descriptions of the visual content. Each video description segment consists of a vertical sidebar that is colored according to its predicted accessibility, an editable text field where an author may add descriptions, and \u201csave\u201d/\u201cedit\u201d and \u201cdismiss\u201d buttons to address or ignore surfaced visual accessibility issues. Video description segments are relatively aligned with the caption segments in the captions pane such that authors can preview the nearby narration. The height of each video description segment represents its relative length such that authors can estimate the approximate length of description required.",
+      "id": "highlight2",
+      "imageId": "image-1712511988762"
+    }
+  ],
+  "sidePanelSpans": [
+    {
+      "text": "The video pane (Figure\u00a02 A) displays the video and lets authors play/pause the video and seek within the video using two timelines: (1) the audio timeline that lets authors navigate to auditorily inaccessible segments, and (2) the visual timeline that lets authors navigate to visually inaccessible segments. The audio timeline displays audio segments that each represent a segment with continuous speech, or non-speech sound. The visual timeline displays visual segments that each represent a segment of continuous footage (i.e., a shot). Each segment is colored with its estimated accessibility1 from gray (accessible) to red (inaccessible) using sRGB inverse gamma mixing. The darkness of the red represents the weighted sum of the similarity score of a segment to segments in the other modality. Using either timeline, authors can gain an overview of accessibility issues, or quickly navigate to an inaccessible segment by clicking on the segment to play the corresponding point in the video. For example, by clicking on the first red segment in the audio track (Figure\u00a02 C) an author will hear an inaccessible audio segment \u2014 music plays that is not available in the captions preview (Figure\u00a02 D). Authors may inspect inaccessibility prediction results displayed in the timeline by hovering over an audio or visual segment (Figure\u00a03) to see the audio segments that are predicted to match that segment (displayed with a higher opacity). As the author navigates and plays the video with the video pane, the corresponding segments are highlighted in the linked video description pane and the caption pane.",
+      "id": "highlight1"
+    },
+    {
+      "text": "The video description pane (Figure\u00a02 F) lets address inaccessible visual segments by writing text descriptions of the visual content. Each video description segment consists of a vertical sidebar that is colored according to its predicted accessibility, an editable text field where an author may add descriptions, and \u201csave\u201d/\u201cedit\u201d and \u201cdismiss\u201d buttons to address or ignore surfaced visual accessibility issues. Video description segments are relatively aligned with the caption segments in the captions pane such that authors can preview the nearby narration. The height of each video description segment represents its relative length such that authors can estimate the approximate length of description required.",
+      "id": "highlight2"
+    }
+  ]
+}
