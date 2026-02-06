@@ -1,0 +1,49 @@
+{
+  "dataset": [
+    {
+      "image": [
+        "https://dl.acm.org/cms/attachment/html/10.1145/3526113.3545703/assets/html/images/uist22-91-fig4.jpg"
+      ],
+      "caption": [
+        "(A) After editing their description, authors can add the description to the video by clicking on \u201cSave\u201d. The vertical side bar and the horizontal bar of the corresponding segment will change to blue color, indicating that this problem has been addressed. (B) Authors can also dismiss a problem by clicking on \u201cDismiss\u201d. The bars will turn gray indicating that this problem has been dismissed."
+      ],
+      "text": [
+        "The video description pane (Figure\u00a02 F) lets address inaccessible visual segments by writing text descriptions of the visual content. Each video description segment consists of a vertical sidebar that is colored according to its predicted accessibility, an editable text field where an author may add descriptions, and \u201csave\u201d/\u201cedit\u201d and \u201cdismiss\u201d buttons to address or ignore surfaced visual accessibility issues. Video description segments are relatively aligned with the caption segments in the captions pane such that authors can preview the nearby narration. The height of each video description segment represents its relative length such that authors can estimate the approximate length of description required."
+      ],
+      "questions": [
+        "No questions defined for this image."
+      ],
+      "questions_customized": [
+        "No questions from the user defined for this image."
+      ],
+      "answers": [
+        "No answers to generated questions defined for this image."
+      ],
+      "preference": [
+        "No preference or request defined for this image."
+      ],
+      "note": [
+        "No note defined for this image."
+      ],
+      "summary": [
+        "No summary defined for this image."
+      ],
+      "subfigureJSON": [
+        "[{\"x\":0, \"y\":0, \"width\":0, \"height\":0, \"annotation\":\"\"}]"
+      ]
+    }
+  ],
+  "mainPageSpans": [
+    {
+      "text": "The video description pane (Figure\u00a02 F) lets address inaccessible visual segments by writing text descriptions of the visual content. Each video description segment consists of a vertical sidebar that is colored according to its predicted accessibility, an editable text field where an author may add descriptions, and \u201csave\u201d/\u201cedit\u201d and \u201cdismiss\u201d buttons to address or ignore surfaced visual accessibility issues. Video description segments are relatively aligned with the caption segments in the captions pane such that authors can preview the nearby narration. The height of each video description segment represents its relative length such that authors can estimate the approximate length of description required.",
+      "id": "highlight1",
+      "imageId": "image-1711674536331"
+    }
+  ],
+  "sidePanelSpans": [
+    {
+      "text": "The video description pane (Figure\u00a02 F) lets address inaccessible visual segments by writing text descriptions of the visual content. Each video description segment consists of a vertical sidebar that is colored according to its predicted accessibility, an editable text field where an author may add descriptions, and \u201csave\u201d/\u201cedit\u201d and \u201cdismiss\u201d buttons to address or ignore surfaced visual accessibility issues. Video description segments are relatively aligned with the caption segments in the captions pane such that authors can preview the nearby narration. The height of each video description segment represents its relative length such that authors can estimate the approximate length of description required.",
+      "id": "highlight1"
+    }
+  ]
+}

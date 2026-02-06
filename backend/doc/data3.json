@@ -1,0 +1,49 @@
+{
+  "dataset": [
+    {
+      "image": [
+        "https://dl.acm.org/cms/attachment/html/10.1145/3526113.3545703/assets/html/images/uist22-91-fig3.jpg"
+      ],
+      "caption": [
+        "Authors can hover on segments of visual/audio timelines in CrossA11y to inspect the computed correspondence between the selected segment and segments in the other modality. Here, opaque segments in the audio track are the segments predicted by the system to match the segment in the video track."
+      ],
+      "text": [
+        "By default, the video description pane displays visual segments with estimated accessibility scores lower than 0.35 (range 0-1). Authors can use the slider (Figure\u807d2 G) to surface more visual accessibility problems when making sure they covered everything, or fewer accessibility problems when prioritizing for a time constraint."
+      ],
+      "questions": [
+        "No questions defined for this image."
+      ],
+      "questions_customized": [
+        "No questions from the user defined for this image."
+      ],
+      "answers": [
+        "No answers to generated questions defined for this image."
+      ],
+      "preference": [
+        "No preference or request defined for this image."
+      ],
+      "note": [
+        "No note defined for this image."
+      ],
+      "summary": [
+        "No summary defined for this image."
+      ],
+      "subfigureJSON": [
+        "[{\"x\":0, \"y\":0, \"width\":0, \"height\":0, \"annotation\":\"\"}]"
+      ]
+    }
+  ],
+  "mainPageSpans": [
+    {
+      "text": "By default, the video description pane displays visual segments with estimated accessibility scores lower than 0.35 (range 0-1). Authors can use the slider (Figure\u807d2 G) to surface more visual accessibility problems when making sure they covered everything, or fewer accessibility problems when prioritizing for a time constraint.",
+      "id": "highlight1",
+      "imageId": "image-1711674386720"
+    }
+  ],
+  "sidePanelSpans": [
+    {
+      "text": "By default, the video description pane displays visual segments with estimated accessibility scores lower than 0.35 (range 0-1). Authors can use the slider (Figure\u807d2 G) to surface more visual accessibility problems when making sure they covered everything, or fewer accessibility problems when prioritizing for a time constraint.",
+      "id": "highlight1"
+    }
+  ]
+}

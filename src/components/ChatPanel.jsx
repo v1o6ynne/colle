@@ -6,29 +6,49 @@ import SelectTextBox from './ChatPanel/SelectTextBox';
 import SelectImagesBox from './ChatPanel/SelectImagesBox';
 import UserInput from './ChatPanel/UserInput';
 
-export default function ChatPanel({ 
-    inputText, 
-    setInputText, 
-    mode, 
-    selectedText,
-    screenshotImage
+export default function ChatPanel({
+  inputText,
+  setInputText,
+  mode,
+  selectedText,
+  screenshotImage
 }) {
-    const [activeTab, setActiveTab] = useState('assistant');
+  const [activeTab, setActiveTab] = useState('assistant');
 
-    return (
-        <aside className="chat-panel">
-            <ChatHeader activeTab={activeTab} setActiveTab={setActiveTab} />
+  // 
+  const [messages, setMessages] = useState([
+    { role: 'assistant', text: "Hello! I'm ready to analyze this paper." }
+  ]);
 
-            <div className="chat-content">
-                <HelperCards activeTab={activeTab} />
-                <Messages activeTab={activeTab} />
-            </div>
+  const addAssistant = (text) => {
+    setMessages((prev) => [...prev, { role: 'assistant', text }]);
+  };
 
-            <div className="chat-input-area">
-                <SelectTextBox selectedText={selectedText} />
-                <SelectImagesBox screenshotImage={screenshotImage} />
-                <UserInput inputText={inputText} setInputText={setInputText} />
-            </div>
-        </aside>
-    );
+  const addUser = (text) => {
+    setMessages((prev) => [...prev, { role: 'user', text }]);
+  };
+
+  return (
+    <aside className="chat-panel">
+      <ChatHeader activeTab={activeTab} setActiveTab={setActiveTab} />
+
+      <div className="chat-content">
+        <HelperCards activeTab={activeTab} />
+        <Messages activeTab={activeTab} messages={messages} />
+      </div>
+
+      <div className="chat-input-area">
+        <SelectTextBox selectedText={selectedText} />
+        <SelectImagesBox screenshotImage={screenshotImage} />
+        <UserInput
+          inputText={inputText}
+          setInputText={setInputText}
+          selectedText={selectedText}
+          screenshotImage={screenshotImage}
+          onUserMessage={addUser}
+          onResponse={addAssistant}
+        />
+      </div>
+    </aside>
+  );
 }

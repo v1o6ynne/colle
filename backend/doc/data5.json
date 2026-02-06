@@ -1,0 +1,56 @@
+{
+  "dataset": [
+    {
+      "image": [
+        "https://dl.acm.org/cms/attachment/html/10.1145/3526113.3545703/assets/html/images/uist22-91-fig2.jpg"
+      ],
+      "caption": [
+        "In CrossA11y's interface, the video pane (A) displays audio and visual timelines with accessibility visualization that allows authors to quickly identify and navigate to accessibility issues. The video description pane (F) surfaces inaccessible visual segments and lets authors to add descriptions. The captions pane (E) provides time-aligned captions and detected non-speech sound segments for authors to seek within the video and add captions."
+      ],
+      "text":[],
+      "questions": [
+        "No questions defined for this image."
+      ],
+      "questions_customized": [
+        "No questions from the user defined for this image."
+      ],
+      "answers": [
+        "No answers to generated questions defined for this image."
+      ],
+      "preference": [
+        "No preference or request defined for this image."
+      ],
+      "note": [
+        "No note defined for this image."
+      ],
+      "summary": [
+        "No summary defined for this image."
+      ],
+      "subfigureJSON": [
+        "[{\"x\":0, \"y\":0, \"width\":0, \"height\":0, \"annotation\":\"\"}]"
+      ]
+    }
+  ],
+  "mainPageSpans": [
+    {
+      "text": "Prior work aims to help people manually author audio descriptions with task-specific authoring tools\u00a0[1, 6, 16], feedback on the content at production-time\u00a0[33], with feedback on audio descriptions\u00a0[27, 39], and with hosted descriptions\u00a0[16]. Since authoring descriptions is a time-consuming process, other prior work seeks to provide computational support for this task including using: computer vision to detect visual content\u00a0[8, 12, 13], using deep learning to provide a computer-drafted description\u00a0[13, 46, 48], synthesized voice to convert text to speech\u00a0[12, 17, 18, 41], and automatic editing to fit human-authored descriptions into the space provided\u00a0[31]. While focusing on methods to help people write better descriptions, such tools only find inaccessible moments for description by surfacing silent portions of the video\u00a0[6, 12, 31, 48], or by helping people find film-specific visual content that may need descriptions (e.g., scene changes, characters\u00a0[12]). Rather than assessing video in a single modality, we explore finding accessibility problems by assessing asymmetries between the auditory and visual content.",
+      "id": "highlight1",
+      "imageId": "image-1711694953113"
+    },
+    {
+      "text": "Assessing accessibility of visual content is challenging for authors who do not share accessibility needs with their audience members. As a result, accessibility research includes a long history of prior work aimed to help people assess and correct accessibility problems in their designs including tools aimed at simulating accessibility issues\u00a0[4, 5] and evaluating accessibility with respect to metrics\u00a0[24, 43]. Simulation-style tools to support sighted designers trying to achieve visually accessible designs; for example, Chrome Dev Tool's colorblindness and blurriness emulators to help designers assess legibility\u00a0[5]. Using such simulations as a replacement for involvement with people with disabilities has several issues, as they are unable to capture the full experience of disability and give designers false conceptions\u00a0[42]. Given that people with disabilities, in partnership with organizations (e.g., W3C\u00a0[7]), have authored guidelines and best practices to make design accessible, other prior work alerts authors to violations of these guidelines in authoring tools. For example, accessibility checkers in PowerPoint\u00a0[34] and Adobe Acrobat\u00a0[35] alert authors to potential accessibility issues in their designs (e.g., missing alt text, document read order). Furthermore, web accessibility checkers provide a report card on similar types of issues to fix\u00a0[24, 43]. We extend prior work by assessing the accessibility issues and surfacing accessibility issues based on existing guidelines about video accessibility.",
+      "id": "highlight2",
+      "imageId": "image-1711694953113"
+    }
+  ],
+  "sidePanelSpans": [
+    {
+      "text": "Prior work aims to help people manually author audio descriptions with task-specific authoring tools\u00a0[1, 6, 16], feedback on the content at production-time\u00a0[33], with feedback on audio descriptions\u00a0[27, 39], and with hosted descriptions\u00a0[16]. Since authoring descriptions is a time-consuming process, other prior work seeks to provide computational support for this task including using: computer vision to detect visual content\u00a0[8, 12, 13], using deep learning to provide a computer-drafted description\u00a0[13, 46, 48], synthesized voice to convert text to speech\u00a0[12, 17, 18, 41], and automatic editing to fit human-authored descriptions into the space provided\u00a0[31]. While focusing on methods to help people write better descriptions, such tools only find inaccessible moments for description by surfacing silent portions of the video\u00a0[6, 12, 31, 48], or by helping people find film-specific visual content that may need descriptions (e.g., scene changes, characters\u00a0[12]). Rather than assessing video in a single modality, we explore finding accessibility problems by assessing asymmetries between the auditory and visual content.",
+      "id": "highlight1"
+    },
+    {
+      "text": "Assessing accessibility of visual content is challenging for authors who do not share accessibility needs with their audience members. As a result, accessibility research includes a long history of prior work aimed to help people assess and correct accessibility problems in their designs including tools aimed at simulating accessibility issues\u00a0[4, 5] and evaluating accessibility with respect to metrics\u00a0[24, 43]. Simulation-style tools to support sighted designers trying to achieve visually accessible designs; for example, Chrome Dev Tool's colorblindness and blurriness emulators to help designers assess legibility\u00a0[5]. Using such simulations as a replacement for involvement with people with disabilities has several issues, as they are unable to capture the full experience of disability and give designers false conceptions\u00a0[42]. Given that people with disabilities, in partnership with organizations (e.g., W3C\u00a0[7]), have authored guidelines and best practices to make design accessible, other prior work alerts authors to violations of these guidelines in authoring tools. For example, accessibility checkers in PowerPoint\u00a0[34] and Adobe Acrobat\u00a0[35] alert authors to potential accessibility issues in their designs (e.g., missing alt text, document read order). Furthermore, web accessibility checkers provide a report card on similar types of issues to fix\u00a0[24, 43]. We extend prior work by assessing the accessibility issues and surfacing accessibility issues based on existing guidelines about video accessibility.",
+      "id": "highlight2"
+    }
+  ]
+}
