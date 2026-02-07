@@ -6,19 +6,23 @@ export default function UserInput({
   setInputText,
   onResponse,
   onUserMessage,
-  selectedText,
-  screenshotImage
+  selectedTexts = [],
+  screenshotImages = []
 }) {
 
   const [loading, setLoading] = useState(false);
 
   const buildPrompt = (prompt) => {
-    if (!selectedText) return prompt;
+    if (!selectedTexts.length) return prompt;
+
+    const contextBlock = selectedTexts
+      .map((t, i) => `[Selection ${i + 1}]\n${t}`)
+      .join('\n\n');
 
     return `
 Context:
 
-${selectedText}
+${contextBlock}
 
 -------------------------
 
@@ -43,8 +47,9 @@ ${prompt}
 
       form.append("prompt", buildPrompt(prompt));
 
-      if (screenshotImage)
-        form.append("imageDataUrl", screenshotImage);
+      for (const imageDataUrl of screenshotImages) {
+        form.append("imageDataUrl", imageDataUrl);
+      }
 
       const res = await fetch("http://localhost:3000/assistant-chat", {
         method: "POST",

@@ -4,6 +4,12 @@
     --bg-gray: #f8f9fa;
     --text-main: #1f2937;
     --text-light: #6b7280;
+    /* Vivid blue theme for pinned selections */
+    --pinned-blue: #2563eb;
+    --pinned-blue-light: #3b82f6;
+    --pinned-blue-bg: #eff6ff;
+    --pinned-blue-border: #93c5fd;
+    --pinned-blue-muted: #1e40af;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -199,10 +205,56 @@ body, html {
     border-bottom: 2px solid var(--primary-red); 
     padding-bottom: 2px; 
 }
+/* Pinned upper section: selected text & figure areas (vivid blue) */
+.chat-pinned-selections {
+    flex-shrink: 0;
+    background: linear-gradient(180deg, var(--pinned-blue-bg) 0%, #dbeafe 100%);
+    border-bottom: 2px solid var(--pinned-blue-border);
+    padding: 14px 20px;
+    max-height: 220px;
+    overflow-y: auto;
+}
+
+.chat-pinned-selections-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--pinned-blue-muted);
+    margin-bottom: 10px;
+}
+
+.chat-pinned-selections-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.chat-pinned-selections .selected-text-box {
+    background: white;
+    border: 1px solid var(--pinned-blue-border);
+    border-left: 4px solid var(--pinned-blue);
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.12);
+}
+
+
+.chat-pinned-selections .screenshot-preview-box {
+    background: white;
+    border: 1px solid var(--pinned-blue-border);
+    border-left: 4px solid var(--pinned-blue);
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.12);
+}
+
+.chat-pinned-selections .clear-btn:hover {
+    color: var(--pinned-blue);
+    background-color: rgba(37, 99, 235, 0.1);
+}
+
 .chat-content { 
     flex: 1; 
     padding: 20px; 
     overflow-y: auto; 
+    min-height: 0;
 }
 
 .helper-cards {
@@ -267,6 +319,11 @@ body, html {
     border-top: 1px solid var(--border-color); 
 }
 
+.selected-text-box,
+.screenshot-preview-box {
+    position: relative;
+}
+
 .selected-text-box {
     background: #f0f7ff;
     border: 1px solid #bfdbfe;
@@ -277,17 +334,24 @@ body, html {
     overflow-y: auto;
 }
 
-.select-box-header {
+.selected-box-header {
     display: flex;
+    align-items: center;
     justify-content: space-between;
-    align-items: flex-start;
+    gap: 8px;
     margin-bottom: 6px;
 }
 
-.selected-text-box strong {
-    color: var(--primary-red);
+.selected-box-title {
     font-size: 12px;
+    font-weight: 600;
     text-transform: uppercase;
+    letter-spacing: 0.02em;
+    color: var(--text-light);
+}
+
+.chat-pinned-selections .selected-box-title {
+    color: var(--pinned-blue-muted);
 }
 
 .selected-text-box p {
@@ -306,7 +370,10 @@ body, html {
     margin-bottom: 12px;
     max-height: 150px;
     overflow-y: auto;
-    position: relative;
+}
+
+.screenshot-preview-box .selected-box-header {
+    margin-bottom: 8px;
 }
 
 .screenshot-preview-box img {

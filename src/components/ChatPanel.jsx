@@ -10,14 +10,13 @@ export default function ChatPanel({
   inputText,
   setInputText,
   mode,
-  selectedText,
-  setSelectedText,
-  screenshotImage,
-  setScreenshotImage
+  selectedTexts,
+  onRemoveSelectedText,
+  screenshotImages,
+  onRemoveScreenshotImage
 }) {
   const [activeTab, setActiveTab] = useState('assistant');
 
-  // for simplicity, we keep all messages in this component. In a more complex app, you might want to use a state management library or context.
   const [messages, setMessages] = useState([
     { role: 'assistant', text: "Hello! I'm ready to analyze this paper." }
   ]);
@@ -30,9 +29,33 @@ export default function ChatPanel({
     setMessages((prev) => [...prev, { role: 'user', text }]);
   };
 
+  const hasSelection = selectedTexts.length > 0 || screenshotImages.length > 0;
+
   return (
     <aside className="chat-panel">
       <ChatHeader activeTab={activeTab} setActiveTab={setActiveTab} />
+
+      {hasSelection && (
+        <div className="chat-pinned-selections">
+          <div className="chat-pinned-selections-label">Pinned context</div>
+          <div className="chat-pinned-selections-inner">
+            {selectedTexts.map((text, index) => (
+              <SelectTextBox
+                key={`text-${index}`}
+                selectedText={text}
+                onClear={() => onRemoveSelectedText(index)}
+              />
+            ))}
+            {screenshotImages.map((image, index) => (
+              <SelectImagesBox
+                key={`image-${index}`}
+                screenshotImage={image}
+                onClear={() => onRemoveScreenshotImage(index)}
+              />
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="chat-content">
         <HelperCards activeTab={activeTab} />
@@ -40,13 +63,11 @@ export default function ChatPanel({
       </div>
 
       <div className="chat-input-area">
-        <SelectTextBox selectedText={selectedText} onClear={() => setSelectedText('')} />
-        <SelectImagesBox screenshotImage={screenshotImage} onClear={() => setScreenshotImage('')} />
         <UserInput
           inputText={inputText}
           setInputText={setInputText}
-          selectedText={selectedText}
-          screenshotImage={screenshotImage}
+          selectedTexts={selectedTexts}
+          screenshotImages={screenshotImages}
           onUserMessage={addUser}
           onResponse={addAssistant}
         />

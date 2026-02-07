@@ -41,10 +41,14 @@ export default function usePaperPanel({ onCopySelection, onTempScreenshot, mode 
 
     const handleTextSelection = () => {
       const sel = window.getSelection();
-      if (sel && sel.toString().length > 0) {
-        const cleanedText = sel.toString().replace(/\s+/g, ' ').trim();
-        onCopySelection(cleanedText);
-      }
+      if (!sel || sel.toString().length === 0) return;
+      const root = containerRef.current;
+      if (!root) return;
+      const anchorInPanel = root.contains(sel.anchorNode);
+      const focusInPanel = root.contains(sel.focusNode);
+      if (!anchorInPanel || !focusInPanel) return;
+      const cleanedText = sel.toString().replace(/\s+/g, ' ').trim();
+      onCopySelection(cleanedText);
     };
 
     document.addEventListener('mouseup', handleTextSelection);

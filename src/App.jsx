@@ -8,11 +8,11 @@ import './App.css';
 export default function AcademicAssistant() {
     const [inputText, setInputText] = useState('');
     const [mode, setMode] = useState(null);
-    const [selectedText, setSelectedText] = useState('');
-    const [screenshotImage, setScreenshotImage] = useState('');
+    const [selectedTexts, setSelectedTexts] = useState([]);
+    const [screenshotImages, setScreenshotImages] = useState([]);
 
     const handleCopySelection = (cleanedText) => {
-        setSelectedText(cleanedText);
+        setSelectedTexts((prev) => [...prev, cleanedText]);
     };
 
     const handleModeChange = (newMode) => {
@@ -20,8 +20,15 @@ export default function AcademicAssistant() {
     };
 
     const handleTempScreenshot = (imageData) => {
-        // Auto-confirm screenshot, no manual buttons
-        setScreenshotImage(imageData);
+        setScreenshotImages((prev) => [...prev, imageData]);
+    };
+
+    const removeSelectedText = (index) => {
+        setSelectedTexts((prev) => prev.filter((_, i) => i !== index));
+    };
+
+    const removeScreenshotImage = (index) => {
+        setScreenshotImages((prev) => prev.filter((_, i) => i !== index));
     };
 
     return (
@@ -37,10 +44,10 @@ export default function AcademicAssistant() {
                 inputText={inputText} 
                 setInputText={setInputText} 
                 mode={mode} 
-                selectedText={selectedText}
-                setSelectedText={setSelectedText}
-                screenshotImage={screenshotImage}
-                setScreenshotImage={setScreenshotImage}
+                selectedTexts={selectedTexts}
+                onRemoveSelectedText={removeSelectedText}
+                screenshotImages={screenshotImages}
+                onRemoveScreenshotImage={removeScreenshotImage}
             />
         </div>
     );
