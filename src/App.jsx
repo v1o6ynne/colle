@@ -38,7 +38,9 @@ export default function AcademicAssistant() {
                 setInputText={setInputText} 
                 mode={mode} 
                 selectedText={selectedText}
+                setSelectedText={setSelectedText}
                 screenshotImage={screenshotImage}
+                setScreenshotImage={setScreenshotImage}
             />
         </div>
     );

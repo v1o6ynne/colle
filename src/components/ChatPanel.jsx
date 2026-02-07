@@ -11,11 +11,13 @@ export default function ChatPanel({
   setInputText,
   mode,
   selectedText,
-  screenshotImage
+  setSelectedText,
+  screenshotImage,
+  setScreenshotImage
 }) {
   const [activeTab, setActiveTab] = useState('assistant');
 
-  // 
+  // for simplicity, we keep all messages in this component. In a more complex app, you might want to use a state management library or context.
   const [messages, setMessages] = useState([
     { role: 'assistant', text: "Hello! I'm ready to analyze this paper." }
   ]);
@@ -38,8 +40,8 @@ export default function ChatPanel({
       </div>
 
       <div className="chat-input-area">
-        <SelectTextBox selectedText={selectedText} />
-        <SelectImagesBox screenshotImage={screenshotImage} />
+        <SelectTextBox selectedText={selectedText} onClear={() => setSelectedText('')} />
+        <SelectImagesBox screenshotImage={screenshotImage} onClear={() => setScreenshotImage('')} />
         <UserInput
           inputText={inputText}
           setInputText={setInputText}

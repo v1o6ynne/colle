@@ -153,7 +153,8 @@ app.post('/assistant-chat', upload.single('imageFile'), async (req, res) => {
     const result = extractGeminiParts(response);
     res.json({ text: result.text, images: result.images, refs });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error("ASSISTANT_CHAT_ERROR:", error);
+    res.status(500).json({ error: error.message, stack: error.stack });
   }
 });
 

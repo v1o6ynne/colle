@@ -16,7 +16,7 @@ export default function UserInput({
     if (!selectedText) return prompt;
 
     return `
-Context from highlighted paper text:
+Context:
 
 ${selectedText}
 
@@ -32,7 +32,7 @@ ${prompt}
     const prompt = inputText.trim();
     if (!prompt || loading) return;
 
-    // ⭐ 立即显示用户消息
+
     onUserMessage?.(prompt);
 
     setInputText('');
@@ -41,7 +41,6 @@ ${prompt}
     try {
       const form = new FormData();
 
-      // ⭐⭐⭐ 关键：拼上下文
       form.append("prompt", buildPrompt(prompt));
 
       if (screenshotImage)
@@ -52,10 +51,11 @@ ${prompt}
         body: form
       });
 
-      if (!res.ok)
-        throw new Error(`Server error ${res.status}`);
-
       const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data?.error || `Server error ${res.status}`);
+      }
 
       onResponse?.(data.text || "(No response)");
 
