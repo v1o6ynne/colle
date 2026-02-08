@@ -10,13 +10,12 @@ export default function ChatPanel({
   style,
   inputText,
   setInputText,
-  mode,
   selectedText,
   onClearSelectedText,
   screenshotImage,
   onClearScreenshotImage
 }) {
-  const [activeTab, setActiveTab] = useState('assistant');
+  const [activeTab, setActiveTab] = useState('Assistant');
 
   const [messages, setMessages] = useState([
     { role: 'assistant', text: "Hello! I'm ready to analyze this paper." }

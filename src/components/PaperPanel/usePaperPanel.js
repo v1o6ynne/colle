@@ -8,7 +8,14 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   import.meta.url,
 ).toString();
 
-export default function usePaperPanel({ onCopySelection, onTempScreenshot, mode }) {
+export default function usePaperPanel({
+  onCopySelection,
+  onTempScreenshot,
+  mode,
+  selectedText,
+  screenshotImage,
+  screenshotClearTick,
+}) {
   const [file] = useState('./2208.11144v1.pdf');
   const [numPages, setNumPages] = useState(null);
   const [containerWidth, setContainerWidth] = useState(800);
@@ -16,6 +23,13 @@ export default function usePaperPanel({ onCopySelection, onTempScreenshot, mode 
   const canvasRef = useRef(null);
   const isDrawingRef = useRef(false);
   const startRef = useRef({ x: 0, y: 0 });
+  const lastRectRef = useRef(null);
+  const textRangeRef = useRef(null);
+  const onTempScreenshotRef = useRef(onTempScreenshot);
+
+  useEffect(() => {
+    onTempScreenshotRef.current = onTempScreenshot;
+  }, [onTempScreenshot]);
 
   const options = useMemo(() => ({
     cMapUrl: `https://unpkg.com/pdfjs-dist@${pdfjs.version}/cmaps/`,
@@ -27,7 +41,7 @@ export default function usePaperPanel({ onCopySelection, onTempScreenshot, mode 
     const updateWidth = () => {
       if (containerRef.current) {
         const newWidth = containerRef.current.clientWidth - 40;
-        setContainerWidth(prev => Math.abs(prev - newWidth) > 1 ? newWidth : prev);
+        setContainerWidth((prev) => (Math.abs(prev - newWidth) > 1 ? newWidth : prev));
       }
     };
     const resizeObserver = new ResizeObserver(updateWidth);
@@ -47,13 +61,43 @@ export default function usePaperPanel({ onCopySelection, onTempScreenshot, mode 
       const anchorInPanel = root.contains(sel.anchorNode);
       const focusInPanel = root.contains(sel.focusNode);
       if (!anchorInPanel || !focusInPanel) return;
+
       const cleanedText = sel.toString().replace(/\s+/g, ' ').trim();
-      onCopySelection(cleanedText);
+      if (!cleanedText) return;
+
+      textRangeRef.current = sel.getRangeAt(0).cloneRange();
+      onCopySelection?.(cleanedText);
     };
 
     document.addEventListener('mouseup', handleTextSelection);
     return () => document.removeEventListener('mouseup', handleTextSelection);
   }, [mode, onCopySelection]);
+
+  useEffect(() => {
+    if (mode !== 'copy') return;
+
+    const keepSelection = () => {
+      if (!textRangeRef.current) return;
+      const sel = window.getSelection();
+      if (!sel) return;
+
+      if (sel.rangeCount === 0 || sel.toString().length === 0) {
+        sel.removeAllRanges();
+        sel.addRange(textRangeRef.current);
+      }
+    };
+
+    document.addEventListener('selectionchange', keepSelection);
+    return () => document.removeEventListener('selectionchange', keepSelection);
+  }, [mode]);
+
+  useEffect(() => {
+    if (!selectedText) {
+      textRangeRef.current = null;
+      const sel = window.getSelection();
+      if (sel) sel.removeAllRanges();
+    }
+  }, [selectedText]);
 
   useEffect(() => {
     if (mode !== 'screenshot') return;
@@ -76,8 +120,23 @@ export default function usePaperPanel({ onCopySelection, onTempScreenshot, mode 
 
     const ctx = canvas.getContext('2d');
 
-    const handleMouseDown = (e) => {
+    const drawRect = (x, y, width, height) => {
+      ctx.strokeStyle = '#dc2626';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([5, 5]);
+      ctx.strokeRect(x, y, width, height);
+    };
+
+    const redrawCanvas = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (lastRectRef.current) {
+        const { x, y, width, height } = lastRectRef.current;
+        drawRect(x, y, width, height);
+      }
+    };
+
+    const handleMouseDown = (e) => {
+      redrawCanvas();
       isDrawingRef.current = true;
       startRef.current.x = e.clientX - rect.left;
       startRef.current.y = e.clientY - rect.top - toolbarHeight;
@@ -88,14 +147,10 @@ export default function usePaperPanel({ onCopySelection, onTempScreenshot, mode 
       const currentX = e.clientX - rect.left;
       const currentY = e.clientY - rect.top - toolbarHeight;
 
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.strokeStyle = '#dc2626';
-      ctx.lineWidth = 2;
-      ctx.setLineDash([5, 5]);
-
+      redrawCanvas();
       const width = currentX - startRef.current.x;
       const height = currentY - startRef.current.y;
-      ctx.strokeRect(startRef.current.x, startRef.current.y, width, height);
+      drawRect(startRef.current.x, startRef.current.y, width, height);
     };
 
     const handleMouseUp = (e) => {
@@ -111,6 +166,9 @@ export default function usePaperPanel({ onCopySelection, onTempScreenshot, mode 
       const height = Math.abs(currentY - startRef.current.y);
 
       if (width > 10 && height > 10) {
+        lastRectRef.current = { x, y, width, height };
+        redrawCanvas();
+
         const viewer = document.getElementById('viewerContainer');
         if (viewer) {
           const dpr = 2;
@@ -119,7 +177,7 @@ export default function usePaperPanel({ onCopySelection, onTempScreenshot, mode 
             scale: dpr,
             logging: false,
             useCORS: true,
-            allowTaint: true
+            allowTaint: true,
           }).then((fullCanvas) => {
             const cropped = document.createElement('canvas');
             cropped.width = width * dpr;
@@ -129,12 +187,12 @@ export default function usePaperPanel({ onCopySelection, onTempScreenshot, mode 
             croppedCtx.drawImage(
               fullCanvas,
               x * dpr, y * dpr, width * dpr, height * dpr,
-              0, 0, width * dpr, height * dpr
+              0, 0, width * dpr, height * dpr,
             );
 
             const imageData = cropped.toDataURL('image/png');
-            onTempScreenshot?.(imageData);
-          }).catch(err => console.error('html2canvas error:', err));
+            onTempScreenshotRef.current?.(imageData);
+          }).catch((err) => console.error('html2canvas error:', err));
         }
       }
     };
@@ -149,7 +207,39 @@ export default function usePaperPanel({ onCopySelection, onTempScreenshot, mode 
       canvas.removeEventListener('mouseup', handleMouseUp);
       if (canvas.parentNode) canvas.remove();
     };
-  }, [mode, onTempScreenshot]);
+  }, [mode]);
+
+  useEffect(() => {
+    if (mode !== 'screenshot') {
+      lastRectRef.current = null;
+      const canvas = canvasRef.current;
+      if (canvas) {
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    }
+  }, [mode]);
+
+  useEffect(() => {
+    if (!screenshotImage) {
+      lastRectRef.current = null;
+      const canvas = canvasRef.current;
+      if (canvas) {
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    }
+  }, [screenshotImage]);
+
+  useEffect(() => {
+    if (screenshotClearTick === 0) return;
+    lastRectRef.current = null;
+    const canvas = canvasRef.current;
+    if (canvas) {
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+  }, [screenshotClearTick]);
 
   return {
     file,

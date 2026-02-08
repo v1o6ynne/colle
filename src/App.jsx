@@ -9,6 +9,7 @@ export default function AcademicAssistant() {
   const [mode, setMode] = useState(null);
   const [selectedText, setSelectedText] = useState('');
   const [screenshotImage, setScreenshotImage] = useState('');
+  const [screenshotClearTick, setScreenshotClearTick] = useState(0);
 
   const [chatWidth, setChatWidth] = useState(420);
 
@@ -24,7 +25,10 @@ export default function AcademicAssistant() {
 
   const clearSelectedText = () => setSelectedText('');
 
-  const clearScreenshotImage = () => setScreenshotImage('');
+  const clearScreenshotImage = () => {
+    setScreenshotImage('');
+    setScreenshotClearTick((prev) => prev + 1);
+  };
 
   
   const startResize = (e) => {
@@ -61,6 +65,9 @@ export default function AcademicAssistant() {
         onCopySelection={handleCopySelection}
         onModeChange={handleModeChange}
         onTempScreenshot={handleTempScreenshot}
+        selectedText={selectedText}
+        screenshotImage={screenshotImage}
+        screenshotClearTick={screenshotClearTick}
       />
 
       {/* ✅ 关键：分隔条必须在这里 */}
@@ -70,7 +77,6 @@ export default function AcademicAssistant() {
         style={{ width: chatWidth }}
         inputText={inputText}
         setInputText={setInputText}
-        mode={mode}
         selectedText={selectedText}
         onClearSelectedText={clearSelectedText}
         screenshotImage={screenshotImage}

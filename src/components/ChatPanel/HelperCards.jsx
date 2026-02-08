@@ -2,7 +2,7 @@ import React from 'react';
 import { Highlighter, Image as ImageIcon } from 'lucide-react';
 
 export default function HelperCards({ activeTab }) {
-    if (activeTab === 'assistant') {
+    if (activeTab === 'Assistant') {
         return (
             <div className="helper-cards">
                 <div className="card">
@@ -20,7 +20,7 @@ export default function HelperCards({ activeTab }) {
         );
     }
 
-    if (activeTab === 'figure') {
+    if (activeTab === 'Discovery' || activeTab === 'figure') {
         return (
             <div className="helper-cards">
                 <div className="card">

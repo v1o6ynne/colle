@@ -1,7 +1,7 @@
 import React from 'react';
 
 export default function Messages({ activeTab, messages = [] }) {
-  if (activeTab === 'assistant') {
+  if (activeTab === 'Assistant') {
     return (
       <div className="messages-container">
         {messages.map((m, idx) => (
@@ -16,7 +16,7 @@ export default function Messages({ activeTab, messages = [] }) {
     );
   }
 
-  if (activeTab === 'figure') {
+  if (activeTab === 'Discovery' || activeTab === 'figure') {
     return (
       <div className="messages-container">
         <div style={{ color: '#6b7280', fontSize: '13px', padding: '20px', textAlign: 'center' }}>
