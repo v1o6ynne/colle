@@ -327,39 +327,84 @@ ${paperText}` }
   }
 });
 
+const FLASHCARD_PROMPT = `You are creating a VISUAL THINKING CARD from the user's reading session. The user has provided:
+1) Selected text excerpts they highlighted from the paper
+2) Screenshot images they captured from the paper
+3) Their assistant chat (questions and answers)
+4) For each selection, "related" passages (why other parts of the paper connect to it)
+
+Your task: Generate ONE image that illustrates the most important take-aways from this session.
+
+CRITICAL RULES:
+- Do NOT redraw, replace, or alter the user's original screenshots or selected text. They must appear in your output exactly as provided (same content, same layout where possible).
+- ADD annotations, coloring, and overlays ON the provided material: highlights, underlines, circles, arrows, callout boxes, labels, and short captions to emphasize key concepts, connections, and main take-aways.
+- Use a consistent visual language: soft colors (e.g. light green, sky blue, yellow, pink) for highlights and annotations so the original content stays readable.
+- Integrate the selected text excerpts into the layout (as quote blocks or panels) and add coloring or underlining to stress important phrases.
+- If multiple screenshots are provided, include them in the card and add annotations on each to show what matters and how it links to the rest.
+- Summarize the main take-aways from the assistant chat and related content as short labels or a small "Key points" area, with arrows or numbers pointing to the relevant parts of the screenshots/text.
+- Keep the overall layout clear and scannable (e.g. horizontal 3:4). Use white or very light background. Make it feel like an annotated study sheet, not a replacement of the source material.`;
+
 app.post('/flashcard', upload.single('imageFile'), async (req, res) => {
   try {
-    const noteCardsRaw = req.body.noteCards || '[]';
-    const noteCards = parseJsonField(noteCardsRaw, []);
+    const userData = await readUserData();
 
-    let contextSummary = '';
+    const textParts = [];
     const imageParts = [];
-    noteCards.forEach((card, i) => {
-      const hlTexts = (card.highlights || []).map((h) => h.text).join('\n- ');
-      contextSummary += `\n\nNote Card ${i + 1}:\nHighlights:\n- ${hlTexts}\nUser Note: ${card.userNote || '(none)'}`;
-      if (card.screenshotDataUrl) {
-        const inlineData = dataUrlToInlineData(card.screenshotDataUrl);
-        if (inlineData) imageParts.push(inlineData);
+
+    const screenshots = userData.screenshots || [];
+    const discoveries = userData.discoveries || [];
+    const assistantChats = userData.assistantChats || [];
+    const highlights = userData.highlights || [];
+
+    discoveries.forEach((d, i) => {
+      const related = d.related || { text: '', refs: [] };
+      const refs = related.refs || [];
+      textParts.push(
+        `[Selection ${i + 1}] ${d.selectionType === 'text' ? 'Selected text' : 'Screenshot'}:`
+      );
+      if (d.selectionType === 'text') {
+        textParts.push(`"${(d.selectionContent || '').slice(0, 500)}"`);
       }
+      textParts.push(`Related: ${related.text || '(none)'}`);
+      refs.forEach((r) => {
+        textParts.push(`  - ${r.sectionRef || ''}: "${(r.quote || '').slice(0, 80)}"`);
+      });
     });
 
-    const prompt = `Please extract the core theme and key points from the selected note cards and generate an infographic in a cute digital cartoon style:
-1. Visual Style:
-Use a digital hand-drawn cartoon illustration style with soft, rounded lines that feel friendly and approachable. The overall visual should be lively, vivid, and suitable for easy-to-understand educational or science communication.
-2. Layout and Background:
-Use a horizontal (3:4) layout. The background should be pure white or a very light solid color, clean and minimal, highlighting the main information while preserving ample white space.
-3. Color Scheme:
-Use soft, bright macaron color tones. The primary color should be light green, complemented by sky blue, beige yellow, light orange, light pink, etc. Colors should be harmonious with moderate saturation, avoiding overly vivid or heavy tones.
-4. Graphic Elements:
-Add a small number of simple cartoon elements and icons with cute expressions or anthropomorphic features (e.g., smiling sun, clouds, chemical molecules) to enhance fun and visual memorability.
-Use clear flowcharts, geometric shapes (such as rounded rectangles), and directional arrows to organize and guide information reading.
-If there are sensitive individuals or copyrighted content, draw similar cartoon substitute figures instead, but do not refuse to generate.
-5. Typography:
-All images and text must follow a cartoon style. Use rounded, clear, and easy-to-read sans-serif fonts. Font colors should match the overall color palette, and avoid any realistic or photographic-style visual elements.
-6. Information Presentation:
-Keep information concise. Use visual design to highlight keywords and core concepts, with generous white space to ensure key points can be grasped at a glance. Emphasize the highlighted content if there is any. Unless otherwise specified, the language should match the language of the input content.
+    if (highlights.length) {
+      textParts.push('\n--- Additional highlights from the paper ---');
+      highlights.slice(0, 20).forEach((h) => {
+        const t = typeof h === 'string' ? h : (h.text || h.content || '');
+        if (t) textParts.push(`- ${t.slice(0, 200)}`);
+      });
+    }
 
-Selected note cards context:${contextSummary}`;
+    if (assistantChats.length) {
+      textParts.push('\n--- Assistant chat (Q&A) ---');
+      assistantChats.slice(-12).forEach((m) => {
+        textParts.push(`${m.role === 'user' ? 'Q' : 'A'}: ${(m.text || '').slice(0, 300)}`);
+      });
+    }
+
+    const contextBlock = textParts.join('\n');
+    const prompt = `${FLASHCARD_PROMPT}\n\nContext from the user's session:\n${contextBlock}`;
+
+    const seenUrls = new Set();
+    screenshots.forEach((s) => {
+      const url = s.imageDataUrl || s.screenshotDataUrl;
+      if (url && !seenUrls.has(url)) {
+        seenUrls.add(url);
+        const inline = dataUrlToInlineData(url);
+        if (inline) imageParts.push(inline);
+      }
+    });
+    discoveries.forEach((d) => {
+      if (d.selectionType === 'image' && d.selectionContent && d.selectionContent.startsWith('data:') && !seenUrls.has(d.selectionContent)) {
+        seenUrls.add(d.selectionContent);
+        const inline = dataUrlToInlineData(d.selectionContent);
+        if (inline) imageParts.push(inline);
+      }
+    });
 
     const parts = [{ text: prompt }, ...imageParts];
 
@@ -369,17 +414,18 @@ Selected note cards context:${contextSummary}`;
     });
     const result = extractGeminiParts(response);
 
-    const userData = await readUserData();
+    userData.flashcards = userData.flashcards || [];
     userData.flashcards.push({
       id: `flashcard-${Date.now()}`,
       imageDataUrl: result.images?.[0] || '',
       text: result.text || '',
-      metadata: { noteCards }
+      metadata: { fromUserData: true }
     });
     await writeUserData(userData);
 
     res.json({ text: result.text, images: result.images });
   } catch (error) {
+    console.error('flashcard:', error);
     res.status(500).json({ error: error.message });
   }
 });

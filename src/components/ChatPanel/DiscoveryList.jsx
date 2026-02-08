@@ -1,7 +1,32 @@
 import React, { useState, useCallback } from 'react';
-import { RefreshCw, ChevronDown, ChevronRight, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { RefreshCw, ChevronDown, ChevronRight, ThumbsUp, ThumbsDown, Download, X, ImageIcon } from 'lucide-react';
 
 const USER_DATA_URL = 'http://localhost:3000/user-data';
+const FLASHCARD_URL = 'http://localhost:3000/flashcard';
+
+function VisualCardModal({ imageDataUrl, onClose, onDownload }) {
+  if (!imageDataUrl) return null;
+  return (
+    <div
+      className="visual-card-overlay"
+      role="dialog"
+      aria-modal="true"
+      onClick={onClose}
+    >
+      <div className="visual-card-modal" onClick={(e) => e.stopPropagation()}>
+        <div className="visual-card-modal-actions">
+          <button type="button" className="visual-card-download-btn" onClick={onDownload} title="Download image">
+            <Download size={28} />
+          </button>
+          <button type="button" className="visual-card-close-btn" onClick={onClose} title="Close">
+            <X size={28} />
+          </button>
+        </div>
+        <img src={imageDataUrl} alt="Generated visual card" className="visual-card-image" />
+      </div>
+    </div>
+  );
+}
 
 function DiscoveryItem({ discovery, discoveryIndex, onLikeChange }) {
   const [expanded, setExpanded] = useState(false);
@@ -77,6 +102,8 @@ function DiscoveryItem({ discovery, discoveryIndex, onLikeChange }) {
 export default function DiscoveryList() {
   const [discoveries, setDiscoveries] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [generating, setGenerating] = useState(false);
+  const [visualCardImage, setVisualCardImage] = useState(null);
 
   const refresh = useCallback(async () => {
     setLoading(true);
@@ -114,8 +141,51 @@ export default function DiscoveryList() {
     [persistDiscoveries]
   );
 
+  const generateVisualCard = useCallback(async () => {
+    setGenerating(true);
+    try {
+      const noteCards = discoveries.map((d) => {
+        const related = d.related || { text: '', refs: [] };
+        const refs = Array.isArray(related.refs) ? related.refs : [];
+        return {
+          highlights: refs.map((r) => ({ text: [r.sectionRef, r.quote].filter(Boolean).join(': ') })),
+          userNote: (related.text || '').slice(0, 300),
+          screenshotDataUrl: d.selectionType === 'image' ? d.selectionContent : undefined
+        };
+      });
+      const res = await fetch(FLASHCARD_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ noteCards })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error || 'Failed to generate');
+      const imageUrl = data.images?.[0];
+      if (imageUrl) setVisualCardImage(imageUrl);
+    } catch (err) {
+      console.error('Generate visual card:', err);
+    } finally {
+      setGenerating(false);
+    }
+  }, [discoveries]);
+
+  const closeVisualCard = useCallback(() => setVisualCardImage(null), []);
+
+  const downloadVisualCard = useCallback(() => {
+    if (!visualCardImage) return;
+    const a = document.createElement('a');
+    a.href = visualCardImage;
+    a.download = `visual-card-${Date.now()}.png`;
+    a.click();
+  }, [visualCardImage]);
+
   return (
     <div className="discovery-list">
+      <VisualCardModal
+        imageDataUrl={visualCardImage}
+        onClose={closeVisualCard}
+        onDownload={downloadVisualCard}
+      />
       <div className="discovery-list-content">
         {discoveries.length === 0 && !loading && (
           <div className="discovery-empty">
@@ -141,6 +211,15 @@ export default function DiscoveryList() {
         >
           <RefreshCw size={18} className={loading ? 'spin' : ''} />
           {loading ? 'Loading…' : 'Refresh'}
+        </button>
+        <button
+          type="button"
+          className="discovery-visual-card-btn"
+          onClick={generateVisualCard}
+          disabled={generating || discoveries.length === 0}
+        >
+          <ImageIcon size={18} className={generating ? 'spin' : ''} />
+          {generating ? 'Generating…' : 'Generate Visual Card'}
         </button>
       </div>
     </div>

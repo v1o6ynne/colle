@@ -20,7 +20,7 @@ export default function HelperCards({ activeTab }) {
         );
     }
 
-    if (activeTab === 'Discovery' || activeTab === 'figure') {
+    if (activeTab === 'Discovery') {
         return (
             <div className="helper-cards">
                 <div className="card">
