@@ -1,8 +1,6 @@
-
 const express = require('express');
 const multer = require('multer');
 const cors = require('cors');
-
 const path = require('path');
 const fs = require('fs/promises');
 const { extractGeminiParts } = require('./gemini-utils');
@@ -14,6 +12,7 @@ const FLASHCARD_MODEL = 'gemini-3-pro-image-preview';
 
 const upload = multer({ storage: multer.memoryStorage() });
 const app = express();
+
 app.use(cors({
   origin: ['http://localhost:5173'],
   methods: ['GET', 'POST', 'OPTIONS'],
@@ -29,7 +28,7 @@ const defaultUserData = () => ({
   screenshots: [],
   assistantChats: [],
   notes: [],
-  figures: [],
+  noteCards: [],
   flashcards: []
 });
 
@@ -120,8 +119,7 @@ Rules:
 1. Focus on the user's question and any context they provide (highlighted text from the paper). Answer concisely and directly.
 2. When your answer refers to specific parts of the paper, insert an inline reference using this exact format: [ref: Short Heading]. The heading should be a concise label (2-5 words) that identifies the relevant section, figure, or concept in the paper. Examples: [ref: Abstract], [ref: Figure 3], [ref: Related Work], [ref: Methodology], [ref: Results Table].
 3. Place references naturally within the text, right after the claim or statement they support. Do not group all references at the end.
-4. Only add references when they genuinely help the reader locate supporting content in the paper. Do not over-reference.
-5. Keep answers clear and concise. Use bullet points or short paragraphs when appropriate.`;
+4. Keep answers clear and concise. Use bullet points or short paragraphs when appropriate.`;
 
 app.post('/assistant-chat', upload.single('imageFile'), async (req, res) => {
   try {
@@ -151,35 +149,53 @@ app.post('/assistant-chat', upload.single('imageFile'), async (req, res) => {
       contents: [{ role: 'user', parts }]
     });
     const result = extractGeminiParts(response);
+
+    const userData = await readUserData();
+    userData.assistantChats.push({ role: 'user', text: prompt, refs });
+    userData.assistantChats.push({ role: 'assistant', text: result.text || '', refs });
+    await writeUserData(userData);
+
     res.json({ text: result.text, images: result.images, refs });
   } catch (error) {
-    console.error("ASSISTANT_CHAT_ERROR:", error);
-    res.status(500).json({ error: error.message, stack: error.stack });
+    res.status(500).json({ error: error.message });
   }
 });
 
-app.post('/figure-description', upload.single('imageFile'), async (req, res) => {
+app.post('/screenshot-analyze', upload.single('imageFile'), async (req, res) => {
   try {
-    if (!req.file && !req.body.imageDataUrl) {
-      return res.status(400).json({ error: 'Missing image' });
+    if (!req.body.imageDataUrl) {
+      return res.status(400).json({ error: 'Missing screenshot image' });
     }
-    const caption = req.body.caption || '';
+    const paperText = req.body.paperText || '[]';
     const parts = [
-      { text: `Generate a concise description of the figure in one-paragraph for low-vision readers. Caption: ${caption}` }
+      { text: `You are a research paper analyst. You are given a screenshot taken from an academic paper and the full text of the paper organized by sections.
+
+Your task: Go through EVERY section of the paper thoroughly. Find all passages that are relevant to, discuss the same topic as, explain, elaborate on, or provide context for the content visible in this screenshot. Think about what concept, method, result, or figure the screenshot shows, then find everywhere in the paper that discusses the same thing.
+
+Consider all types of relevance:
+- Passages that define or introduce the concept shown in the screenshot
+- Methodology sections that describe how what's shown was done
+- Results or findings that relate to the content in the screenshot
+- Discussion passages that interpret or contextualize the screenshot content
+- Related work that references similar concepts
+- Any other passage in the paper that a reader would benefit from reading alongside this screenshot
+
+For each relevant passage, return:
+- "text": A 1-3 sentence summary of why this passage is relevant and what it says
+- "sectionRef": The exact section heading from the paper where this passage appears
+- "quote": An exact short phrase (8-15 words) copied verbatim from the paper text that uniquely identifies where this passage is, so the reader can locate it precisely
+
+Return a JSON array of these objects. Return 3-8 highlights, ordered from most to least relevant. Cover different sections of the paper — do not cluster all highlights from one section.
+
+Return ONLY the JSON array, no other text.
+
+Paper sections:
+${paperText}` }
     ];
 
-    if (req.file) {
-      parts.push({
-        inlineData: {
-          mimeType: req.file.mimetype,
-          data: req.file.buffer.toString('base64')
-        }
-      });
-    } else {
-      const inlineData = dataUrlToInlineData(req.body.imageDataUrl);
-      if (inlineData) {
-        parts.push(inlineData);
-      }
+    const inlineData = dataUrlToInlineData(req.body.imageDataUrl);
+    if (inlineData) {
+      parts.push(inlineData);
     }
 
     const response = await callGemini({
@@ -187,7 +203,16 @@ app.post('/figure-description', upload.single('imageFile'), async (req, res) => 
       contents: [{ role: 'user', parts }]
     });
     const result = extractGeminiParts(response);
-    res.json({ text: result.text, images: result.images });
+
+    let highlights = [];
+    try {
+      const cleaned = (result.text || '').replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
+      highlights = JSON.parse(cleaned);
+    } catch (e) {
+      highlights = [{ text: result.text || 'No relevant passages found.', sectionRef: 'Unknown' }];
+    }
+
+    res.json({ highlights });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -195,13 +220,21 @@ app.post('/figure-description', upload.single('imageFile'), async (req, res) => 
 
 app.post('/flashcard', upload.single('imageFile'), async (req, res) => {
   try {
-    const highlightedFigure = req.body.highlighted_figure || '';
-    const highlightedText = req.body.highlighted_text || '';
-    const userNote = req.body.user_note || '';
-    const userAiInteraction = req.body.user_ai_interaction || '';
-    const paper = req.body.paper || '';
+    const noteCardsRaw = req.body.noteCards || '[]';
+    const noteCards = parseJsonField(noteCardsRaw, []);
 
-    const prompt = `Please extract the core theme and key points from the input PDF, highlighted content and the notes, and generate an infographic in a cute digital cartoon style:
+    let contextSummary = '';
+    const imageParts = [];
+    noteCards.forEach((card, i) => {
+      const hlTexts = (card.highlights || []).map((h) => h.text).join('\n- ');
+      contextSummary += `\n\nNote Card ${i + 1}:\nHighlights:\n- ${hlTexts}\nUser Note: ${card.userNote || '(none)'}`;
+      if (card.screenshotDataUrl) {
+        const inlineData = dataUrlToInlineData(card.screenshotDataUrl);
+        if (inlineData) imageParts.push(inlineData);
+      }
+    });
+
+    const prompt = `Please extract the core theme and key points from the selected note cards and generate an infographic in a cute digital cartoon style:
 1. Visual Style:
 Use a digital hand-drawn cartoon illustration style with soft, rounded lines that feel friendly and approachable. The overall visual should be lively, vivid, and suitable for easy-to-understand educational or science communication.
 2. Layout and Background:
@@ -217,34 +250,25 @@ All images and text must follow a cartoon style. Use rounded, clear, and easy-to
 6. Information Presentation:
 Keep information concise. Use visual design to highlight keywords and core concepts, with generous white space to ensure key points can be grasped at a glance. Emphasize the highlighted content if there is any. Unless otherwise specified, the language should match the language of the input content.
 
-paper:${paper}
-metadata:${JSON.stringify({
-      highlighted_figure: highlightedFigure,
-      highlighted_text: highlightedText,
-      user_note: userNote,
-      user_ai_interaction: userAiInteraction
-    })}`;
+Selected note cards context:${contextSummary}`;
 
-    const parts = [{ text: prompt }];
-    if (req.file) {
-      parts.push({
-        inlineData: {
-          mimeType: req.file.mimetype,
-          data: req.file.buffer.toString('base64')
-        }
-      });
-    } else if (req.body.imageDataUrl) {
-      const inlineData = dataUrlToInlineData(req.body.imageDataUrl);
-      if (inlineData) {
-        parts.push(inlineData);
-      }
-    }
+    const parts = [{ text: prompt }, ...imageParts];
 
     const response = await callGemini({
       model: FLASHCARD_MODEL,
       contents: [{ role: 'user', parts }]
     });
     const result = extractGeminiParts(response);
+
+    const userData = await readUserData();
+    userData.flashcards.push({
+      id: `flashcard-${Date.now()}`,
+      imageDataUrl: result.images?.[0] || '',
+      text: result.text || '',
+      metadata: { noteCards }
+    });
+    await writeUserData(userData);
+
     res.json({ text: result.text, images: result.images });
   } catch (error) {
     res.status(500).json({ error: error.message });
