@@ -30,7 +30,8 @@ const defaultUserData = () => ({
   notes: [],
   noteCards: [],
   flashcards: [],
-  related: []
+  related: [],
+  discoveries: []
 });
 
 async function ensureUserData() {
@@ -47,6 +48,7 @@ async function readUserData() {
   const raw = await fs.readFile(USER_DATA_PATH, 'utf8');
   const data = JSON.parse(raw);
   if (!Array.isArray(data.related)) data.related = [];
+  if (!Array.isArray(data.discoveries)) data.discoveries = [];
   return data;
 }
 
@@ -160,22 +162,34 @@ app.post('/discover-related-content', async (req, res) => {
       if (typeof t === 'string' && t.trim()) items.push({ type: 'text', value: t.trim() });
     });
     imageDataUrls.forEach((dataUrl) => {
-      const inlineData = dataUrlToInlineData(dataUrl);
-      if (inlineData) items.push({ type: 'image', value: inlineData });
+      if (dataUrl && typeof dataUrl === 'string') items.push({ type: 'image', value: dataUrl });
     });
 
     const results = await Promise.all(
       items.map((item) =>
         item.type === 'text'
           ? discoverRelatedContent(paperText, item.value, { isImage: false })
-          : discoverRelatedContent(paperText, null, { isImage: true, inlineData: item.value })
+          : discoverRelatedContent(paperText, null, {
+              isImage: true,
+              inlineData: dataUrlToInlineData(item.value)
+            })
       )
     );
 
     const userData = await readUserData();
-    if (!Array.isArray(userData.related)) userData.related = [];
-    results.forEach((r) => {
-      userData.related.push({ role: 'assistant', text: r.text || '', refs: r.refs || [] });
+    if (!Array.isArray(userData.discoveries)) userData.discoveries = [];
+    results.forEach((r, i) => {
+      const item = items[i];
+      const refs = (r.refs || []).map((ref) => ({
+        sectionRef: ref.sectionRef || ref.section_ref || '',
+        quote: ref.quote || '',
+        liked: null
+      }));
+      userData.discoveries.push({
+        selectionType: item.type,
+        selectionContent: item.value,
+        related: { text: r.text || '', refs }
+      });
     });
     await writeUserData(userData);
 

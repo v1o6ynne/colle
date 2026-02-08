@@ -5,6 +5,7 @@ import Messages from './ChatPanel/Messages';
 import SelectTextBox from './ChatPanel/SelectTextBox';
 import SelectImagesBox from './ChatPanel/SelectImagesBox';
 import UserInput from './ChatPanel/UserInput';
+import DiscoveryList from './ChatPanel/DiscoveryList';
 
 export default function ChatPanel({
   style,
@@ -95,10 +96,17 @@ export default function ChatPanel({
       )}
 
       <div className="chat-content">
-        <HelperCards activeTab={activeTab} />
-        <Messages activeTab={activeTab} messages={messages} />
+        {activeTab === 'Discovery' ? (
+          <DiscoveryList />
+        ) : (
+          <>
+            <HelperCards activeTab={activeTab} />
+            <Messages activeTab={activeTab} messages={messages} />
+          </>
+        )}
       </div>
 
+      {activeTab !== 'Discovery' && (
       <div className="chat-input-area">
         <UserInput
           inputText={inputText}
@@ -112,6 +120,7 @@ export default function ChatPanel({
           paperText={paperText}
         />
       </div>
+      )}
     </aside>
   );
 }
