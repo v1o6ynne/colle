@@ -24,4 +24,4 @@ dist-ssr
 *.sw?
 
 backend/data/users/default.json
-.env
+backend/.env
