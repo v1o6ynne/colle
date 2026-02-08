@@ -13,8 +13,8 @@ export default function ChatPanel({
   mode,
   selectedText,
   onClearSelectedText,
-  screenshotImages,
-  onRemoveScreenshotImage
+  screenshotImage,
+  onClearScreenshotImage
 }) {
   const [activeTab, setActiveTab] = useState('assistant');
 
@@ -32,7 +32,7 @@ export default function ChatPanel({
     setMessages((prev) => [...prev, { role: 'user', text }]);
   };
 
-  const hasSelection = (!!selectedText) || screenshotImages.length > 0;
+  const hasSelection = (!!selectedText) || !!screenshotImage;
 
    const startResizePinned = (e) => {
     e.preventDefault();
@@ -77,13 +77,13 @@ export default function ChatPanel({
                   onClear={onClearSelectedText}
                 />
               )}
-              {screenshotImages.map((image, index) => (
+              {screenshotImage && (
                 <SelectImagesBox
-                  key={`image-${index}`}
-                  screenshotImage={image}
-                  onClear={() => onRemoveScreenshotImage(index)}
+                  key={`image-0`}
+                  screenshotImage={screenshotImage}
+                  onClear={onClearScreenshotImage}
                 />
-              ))}
+              )}
             </div>
           </div>
 
@@ -102,7 +102,7 @@ export default function ChatPanel({
           inputText={inputText}
           setInputText={setInputText}
           selectedText={selectedText}
-          screenshotImages={screenshotImages}
+          screenshotImage={screenshotImage}
           onUserMessage={addUser}
           onResponse={addAssistant}
         />

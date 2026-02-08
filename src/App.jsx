@@ -8,7 +8,7 @@ export default function AcademicAssistant() {
   const [inputText, setInputText] = useState('');
   const [mode, setMode] = useState(null);
   const [selectedText, setSelectedText] = useState('');
-  const [screenshotImages, setScreenshotImages] = useState([]);
+  const [screenshotImage, setScreenshotImage] = useState('');
 
   const [chatWidth, setChatWidth] = useState(420);
 
@@ -19,14 +19,12 @@ export default function AcademicAssistant() {
   const handleModeChange = (newMode) => setMode(newMode);
 
   const handleTempScreenshot = (imageData) => {
-    setScreenshotImages((prev) => [...prev, imageData]);
+    setScreenshotImage(imageData);
   };
 
   const clearSelectedText = () => setSelectedText('');
 
-  const removeScreenshotImage = (index) => {
-    setScreenshotImages((prev) => prev.filter((_, i) => i !== index));
-  };
+  const clearScreenshotImage = () => setScreenshotImage('');
 
   
   const startResize = (e) => {
@@ -75,8 +73,8 @@ export default function AcademicAssistant() {
         mode={mode}
         selectedText={selectedText}
         onClearSelectedText={clearSelectedText}
-        screenshotImages={screenshotImages}
-        onRemoveScreenshotImage={removeScreenshotImage}
+        screenshotImage={screenshotImage}
+        onClearScreenshotImage={clearScreenshotImage}
       />
     </div>
   );
