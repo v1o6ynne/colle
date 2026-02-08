@@ -12,6 +12,7 @@ export default function ChatPanel({
   setInputText,
   selectedText,
   onClearSelectedText,
+  screenshotId,
   screenshotImage,
   onClearScreenshotImage
 }) {
@@ -101,6 +102,7 @@ export default function ChatPanel({
           inputText={inputText}
           setInputText={setInputText}
           selectedText={selectedText}
+          screenshotId={screenshotId} 
           screenshotImage={screenshotImage}
           onUserMessage={addUser}
           onResponse={addAssistant}

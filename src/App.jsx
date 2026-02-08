@@ -13,22 +13,59 @@ export default function AcademicAssistant() {
 
   const [chatWidth, setChatWidth] = useState(420);
 
+  const [screenshotId, setScreenshotId] = useState('');
+
   const handleCopySelection = (cleanedText) => {
     setSelectedText(cleanedText);
   };
 
   const handleModeChange = (newMode) => setMode(newMode);
 
-  const handleTempScreenshot = (imageData) => {
-    setScreenshotImage(imageData);
+ const handleTempScreenshot = async (imageDataUrl) => {
+  const id = `screenshot-${Date.now()}`;  
+  setScreenshotId(id);
+  setScreenshotImage(imageDataUrl);
+
+
+  const screenshotObj = {
+    id,
+    imageDataUrl,
+    anchor: { type: "screenshot" },
+    createdAt: new Date().toISOString()
   };
+
+//   try {
+//     const currentRes = await fetch("http://localhost:3000/user-data");
+//     const current = await currentRes.json();
+
+//     const nextScreenshots = [...(current.screenshots || []), screenshotObj];
+
+//     const saveRes = await fetch("http://localhost:3000/user-data", {
+//       method: "POST",
+//       headers: { "Content-Type": "application/json" },
+//       body: JSON.stringify({
+//         mode: "patch",
+//         data: { screenshots: nextScreenshots }
+//       })
+//     });
+
+//     if (!saveRes.ok) {
+//       const raw = await saveRes.text();
+//       console.error("save screenshot failed:", raw);
+//     }
+//   } catch (e) {
+//     console.error("save screenshot failed:", e);
+//   }
+};
+
 
   const clearSelectedText = () => setSelectedText('');
 
   const clearScreenshotImage = () => {
     setScreenshotImage('');
+    setScreenshotId('');
     setScreenshotClearTick((prev) => prev + 1);
-  };
+    };
 
   
   const startResize = (e) => {
@@ -78,6 +115,7 @@ export default function AcademicAssistant() {
         inputText={inputText}
         setInputText={setInputText}
         selectedText={selectedText}
+        screenshotId={screenshotId} 
         onClearSelectedText={clearSelectedText}
         screenshotImage={screenshotImage}
         onClearScreenshotImage={clearScreenshotImage}

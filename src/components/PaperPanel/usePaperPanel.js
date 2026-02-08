@@ -56,11 +56,11 @@ export default function usePaperPanel({
     const handleTextSelection = () => {
       const sel = window.getSelection();
       if (!sel || sel.toString().length === 0) return;
-      const root = containerRef.current;
-      if (!root) return;
-      const anchorInPanel = root.contains(sel.anchorNode);
-      const focusInPanel = root.contains(sel.focusNode);
-      if (!anchorInPanel || !focusInPanel) return;
+      const viewer = document.getElementById('viewerContainer');
+      if (!viewer) return;
+      const anchorInViewer = viewer.contains(sel.anchorNode);
+      const focusInViewer = viewer.contains(sel.focusNode);
+      if (!anchorInViewer || !focusInViewer) return;
 
       const cleanedText = sel.toString().replace(/\s+/g, ' ').trim();
       if (!cleanedText) return;
@@ -76,19 +76,26 @@ export default function usePaperPanel({
   useEffect(() => {
     if (mode !== 'copy') return;
 
-    const keepSelection = () => {
+    const handleFocusOut = () => {
       if (!textRangeRef.current) return;
-      const sel = window.getSelection();
-      if (!sel) return;
 
-      if (sel.rangeCount === 0 || sel.toString().length === 0) {
-        sel.removeAllRanges();
-        sel.addRange(textRangeRef.current);
+      const activeEl = document.activeElement;
+      const isEditableElement = activeEl?.tagName === 'INPUT' || 
+                                activeEl?.tagName === 'TEXTAREA' ||
+                                activeEl?.contentEditable === 'true';
+      
+      // 焦点离开输入框时，立即恢复 PDF 文字选区
+      if (!isEditableElement) {
+        const sel = window.getSelection();
+        if (sel) {
+          sel.removeAllRanges();
+          sel.addRange(textRangeRef.current);
+        }
       }
     };
 
-    document.addEventListener('selectionchange', keepSelection);
-    return () => document.removeEventListener('selectionchange', keepSelection);
+    document.addEventListener('focus', handleFocusOut, true);
+    return () => document.removeEventListener('focus', handleFocusOut, true);
   }, [mode]);
 
   useEffect(() => {
@@ -98,6 +105,8 @@ export default function usePaperPanel({
       if (sel) sel.removeAllRanges();
     }
   }, [selectedText]);
+
+
 
   useEffect(() => {
     if (mode !== 'screenshot') return;
