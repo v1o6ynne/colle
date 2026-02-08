@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+
+import React, { useEffect, useRef, useState } from 'react';
 import ChatHeader from './ChatPanel/ChatHeader';
 import HelperCards from './ChatPanel/HelperCards';
 import Messages from './ChatPanel/Messages';
@@ -25,7 +26,39 @@ export default function ChatPanel({
     { role: 'assistant', text: "Hello! I'm ready to analyze this paper." }
   ]);
 
-  const [pinnedHeight, setPinnedHeight] = useState(180); 
+  const [pinnedHeight, setPinnedHeight] = useState(180);
+
+ 
+  const historyLoadedRef = useRef(false);
+  useEffect(() => {
+    if (activeTab !== 'Assistant') return;
+    if (historyLoadedRef.current) return;
+
+    const controller = new AbortController();
+
+    (async () => {
+      try {
+        const res = await fetch('http://localhost:3000/user-data', {
+          signal: controller.signal,
+        });
+        if (!res.ok) throw new Error(`GET /user-data failed: ${res.status}`);
+        const data = await res.json();
+
+        const history = data.assistantChats || [];
+
+        setMessages((prev) => {
+          if (history.length > 0) return history;
+          return prev;
+        });
+
+        historyLoadedRef.current = true;
+      } catch (e) {
+        if (e.name !== 'AbortError') console.error('Failed to load chat history:', e);
+      }
+    })();
+
+    return () => controller.abort();
+  }, [activeTab]);
 
   const addAssistant = (text) => {
     setMessages((prev) => [...prev, { role: 'assistant', text }]);
@@ -37,7 +70,7 @@ export default function ChatPanel({
 
   const hasSelection = (!!selectedText) || !!screenshotImage;
 
-   const startResizePinned = (e) => {
+  const startResizePinned = (e) => {
     e.preventDefault();
 
     const startY = e.clientY;
@@ -46,7 +79,7 @@ export default function ChatPanel({
     document.body.classList.add('no-select');
 
     const onMove = (ev) => {
-      const delta = ev.clientY - startY; 
+      const delta = ev.clientY - startY;
       const next = Math.min(360, Math.max(80, startH + delta));
       setPinnedHeight(next);
     };
@@ -65,11 +98,11 @@ export default function ChatPanel({
     <aside className="chat-panel" style={style}>
       <ChatHeader activeTab={activeTab} setActiveTab={setActiveTab} />
 
-        {hasSelection && (
+      {hasSelection && (
         <>
           <div
             className="chat-pinned-selections"
-            style={{ maxHeight: pinnedHeight }} 
+            style={{ maxHeight: pinnedHeight }}
           >
             <div className="chat-pinned-selections-label">Pinned context</div>
             <div className="chat-pinned-selections-inner">
@@ -90,7 +123,6 @@ export default function ChatPanel({
             </div>
           </div>
 
-        
           <div className="resize-handle-y" onMouseDown={startResizePinned} />
         </>
       )}

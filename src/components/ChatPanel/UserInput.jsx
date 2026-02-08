@@ -14,14 +14,13 @@ export default function UserInput({
 }) {
   const [loading, setLoading] = useState(false);
 
-  // ✅ 只给 LLM 用的 prompt（不会被存）
+  
   const buildPromptForLLM = (question) => {
     if (!selectedText) return question;
 
     return `Context:\n\n${selectedText}\n\nUser question:\n${question}`;
   };
 
-  // ✅ 只在“问 AI”时存截图（方案 B）
   const saveScreenshotIfNeeded = async () => {
     if (!screenshotId || !screenshotImage) return;
 
@@ -52,35 +51,62 @@ export default function UserInput({
     });
   };
 
+  const saveHighlightIfNeeded = async () => {
+    if (!selectedText || !selectedTextId) return;
+
+
+    const highlightObj = {
+      id: selectedTextId,
+      text: selectedText,
+      anchor: { type: 'text' },
+      createdAt: new Date().toISOString()
+    };
+
+    const currentRes = await fetch('http://localhost:3000/user-data');
+    const current = await currentRes.json();
+
+    const exists = (current.highlights || []).some(
+      (h) => h.id === selectedTextId
+    );
+    if (exists) return;
+
+    await fetch('http://localhost:3000/user-data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        mode: 'patch',
+        data: {
+          highlights: [...(current.highlights || []), highlightObj]
+        }
+      })
+    });
+  };
+
   const sendMessage = async () => {
     const question = inputText.trim();
     if (!question || loading) return;
 
-    // ✅ 1. 先存“纯用户问题”（会进入 assistantChats）
     onUserMessage?.(question);
 
     setInputText('');
     setLoading(true);
 
     try {
-      // ✅ 2. 问 AI 时才存截图
       await saveScreenshotIfNeeded();
+      await saveHighlightIfNeeded();
 
       const form = new FormData();
-
-      // ✅ 3. prompt = 给 LLM 的（含 Context）
       form.append('prompt', buildPromptForLLM(question));
 
-      // ✅ 4. refs = Context 的结构化版本
+
       const refs = [];
 
       if (selectedText && selectedTextId) {
         refs.push({
           id: selectedTextId,
-          label: selectedText,
+          label: selectedText.slice(0, 30),
           anchor: {
-            type: 'text',
-            highlightId: selectedTextId
+            type: 'text'
           }
         });
       }
