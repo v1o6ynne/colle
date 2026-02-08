@@ -16,7 +16,7 @@ export default function Messages({ activeTab, messages = [] }) {
     );
   }
 
-  if (activeTab === 'Discovery' || activeTab === 'figure') {
+  if (activeTab === 'Discovery') {
     return (
       <div className="messages-container">
         <div style={{ color: '#6b7280', fontSize: '13px', padding: '20px', textAlign: 'center' }}>

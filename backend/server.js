@@ -29,7 +29,8 @@ const defaultUserData = () => ({
   assistantChats: [],
   notes: [],
   noteCards: [],
-  flashcards: []
+  flashcards: [],
+  related: []
 });
 
 async function ensureUserData() {
@@ -44,7 +45,9 @@ async function ensureUserData() {
 async function readUserData() {
   await ensureUserData();
   const raw = await fs.readFile(USER_DATA_PATH, 'utf8');
-  return JSON.parse(raw);
+  const data = JSON.parse(raw);
+  if (!Array.isArray(data.related)) data.related = [];
+  return data;
 }
 
 async function writeUserData(data) {
@@ -90,6 +93,98 @@ async function callGemini({ model, contents }) {
   const ai = await getGenAIClient();
   return ai.models.generateContent({ model, contents });
 }
+
+const DISCOVER_RELATED_PROMPT = (paperText, isImage) => `You are given the full text of an academic paper and one ${isImage ? 'screenshot/figure from the paper' : 'text selection from the paper'}.
+
+Full paper text (by sections):
+---
+${paperText}
+---
+
+User selection: ${isImage ? '[See the attached image]' : '[See below]'}
+
+Your task: Find the 3 most related sections or passages in the paper to this selection. For each of the 3 sections:
+1. Identify the section (heading or short label, e.g. "Abstract", "Methodology", "Figure 2").
+2. Quote a short exact phrase (8–20 words) from the paper that pinpoints the passage.
+3. Explain why it is related: is it the same concept, impact, implementation detail, limitation, definition, or something else?
+
+Format your response as clear prose (reasoning first, then the 3 sections with the above). At the very end, output a single JSON array of refs so we can link to the paper. Use this exact format on the last line:
+REFS: [{"sectionRef": "Section heading", "quote": "exact phrase from paper"}]`;
+
+async function discoverRelatedContent(paperText, selection, options = {}) {
+  const { isImage = false, inlineData = null } = options;
+  const parts = [{ text: DISCOVER_RELATED_PROMPT(paperText, isImage) }];
+  if (isImage && inlineData) {
+    parts.push(inlineData);
+  } else if (!isImage && typeof selection === 'string' && selection.trim()) {
+    parts[0].text += `\n\nSelected text:\n"${selection.trim()}"`;
+  } else if (isImage) {
+    return { text: '', refs: [] };
+  }
+
+  const response = await callGemini({
+    model: TEXT_MODEL,
+    contents: [{ role: 'user', parts }]
+  });
+  const result = extractGeminiParts(response);
+  const text = result.text || '';
+
+  let refs = [];
+  const refsMatch = text.match(/REFS:\s*(\[[\s\S]*?\])\s*$/m);
+  if (refsMatch) {
+    try {
+      refs = JSON.parse(refsMatch[1].trim());
+    } catch (e) {
+      refs = [];
+    }
+  }
+
+  return { text, refs };
+}
+
+app.post('/discover-related-content', async (req, res) => {
+  try {
+    const paperText = (req.body.paperText || '').trim();
+    const selectedTexts = Array.isArray(req.body.selectedTexts) ? req.body.selectedTexts : [];
+    const imageDataUrls = Array.isArray(req.body.imageDataUrls) ? req.body.imageDataUrls : [];
+
+    if (!paperText) {
+      return res.status(400).json({ error: 'Missing paperText' });
+    }
+    if (selectedTexts.length === 0 && imageDataUrls.length === 0) {
+      return res.status(400).json({ error: 'Provide at least one selectedText or imageDataUrl' });
+    }
+
+    const items = [];
+    selectedTexts.forEach((t) => {
+      if (typeof t === 'string' && t.trim()) items.push({ type: 'text', value: t.trim() });
+    });
+    imageDataUrls.forEach((dataUrl) => {
+      const inlineData = dataUrlToInlineData(dataUrl);
+      if (inlineData) items.push({ type: 'image', value: inlineData });
+    });
+
+    const results = await Promise.all(
+      items.map((item) =>
+        item.type === 'text'
+          ? discoverRelatedContent(paperText, item.value, { isImage: false })
+          : discoverRelatedContent(paperText, null, { isImage: true, inlineData: item.value })
+      )
+    );
+
+    const userData = await readUserData();
+    if (!Array.isArray(userData.related)) userData.related = [];
+    results.forEach((r) => {
+      userData.related.push({ role: 'assistant', text: r.text || '', refs: r.refs || [] });
+    });
+    await writeUserData(userData);
+
+    res.json({ ok: true, count: results.length });
+  } catch (error) {
+    console.error('discover-related-content:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
 
 app.get('/user-data', async (req, res) => {
   try {

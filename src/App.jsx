@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Sidebar from './components/Sidebar';
 import PaperPanel from './components/PaperPanel';
 import ChatPanel from './components/ChatPanel';
@@ -12,9 +12,21 @@ export default function AcademicAssistant() {
   const [screenshotClearTick, setScreenshotClearTick] = useState(0);
 
   const [chatWidth, setChatWidth] = useState(420);
+  const [paperText, setPaperText] = useState('');
 
   const [screenshotId, setScreenshotId] = useState('');
   const [selectedTextId, setSelectedTextId] = useState('');
+
+  useEffect(() => {
+    fetch('http://localhost:3000/user-data')
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.paperContent && typeof data.paperContent === 'string') {
+          setPaperText(data.paperContent);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const handleCopySelection = (cleanedText) => {
     const text = (cleanedText || '').trim();
@@ -92,6 +104,7 @@ export default function AcademicAssistant() {
         onCopySelection={handleCopySelection}
         onModeChange={handleModeChange}
         onTempScreenshot={handleTempScreenshot}
+        onPaperTextExtracted={setPaperText}
         selectedText={selectedText}
         screenshotImage={screenshotImage}
         screenshotClearTick={screenshotClearTick}
@@ -106,10 +119,11 @@ export default function AcademicAssistant() {
         setInputText={setInputText}
         selectedText={selectedText}
         selectedTextId={selectedTextId}
-        screenshotId={screenshotId} 
+        screenshotId={screenshotId}
         onClearSelectedText={clearSelectedText}
         screenshotImage={screenshotImage}
         onClearScreenshotImage={clearScreenshotImage}
+        paperText={paperText}
       />
     </div>
   );

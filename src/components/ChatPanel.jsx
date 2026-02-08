@@ -15,7 +15,8 @@ export default function ChatPanel({
   onClearSelectedText,
   screenshotId,
   screenshotImage,
-  onClearScreenshotImage
+  onClearScreenshotImage,
+  paperText = ''
 }) {
   const [activeTab, setActiveTab] = useState('Assistant');
 
@@ -104,10 +105,11 @@ export default function ChatPanel({
           setInputText={setInputText}
           selectedTextId={selectedTextId}
           selectedText={selectedText}
-          screenshotId={screenshotId} 
+          screenshotId={screenshotId}
           screenshotImage={screenshotImage}
           onUserMessage={addUser}
           onResponse={addAssistant}
+          paperText={paperText}
         />
       </div>
     </aside>

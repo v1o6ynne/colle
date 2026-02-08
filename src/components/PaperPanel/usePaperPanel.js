@@ -11,6 +11,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
 export default function usePaperPanel({
   onCopySelection,
   onTempScreenshot,
+  onPaperTextExtracted,
   mode,
   selectedText,
   screenshotImage,
@@ -18,6 +19,10 @@ export default function usePaperPanel({
 }) {
   const [file] = useState('./2208.11144v1.pdf');
   const [numPages, setNumPages] = useState(null);
+  const onPaperTextExtractedRef = useRef(onPaperTextExtracted);
+  useEffect(() => {
+    onPaperTextExtractedRef.current = onPaperTextExtracted;
+  }, [onPaperTextExtracted]);
   const [containerWidth, setContainerWidth] = useState(800);
   const containerRef = useRef(null);
   const canvasRef = useRef(null);
@@ -239,6 +244,34 @@ export default function usePaperPanel({
       }
     }
   }, [screenshotImage]);
+
+  // Extract full text from the same PDF used by PdfViewer and pass to parent (for paperText / discover-related)
+  useEffect(() => {
+    if (!file || !numPages || !onPaperTextExtractedRef.current) return;
+
+    let cancelled = false;
+    const load = async () => {
+      try {
+        const doc = await pdfjs.getDocument(file).promise;
+        if (cancelled) return;
+        let fullText = '';
+        for (let n = 1; n <= numPages; n++) {
+          if (cancelled) return;
+          const page = await doc.getPage(n);
+          const content = await page.getTextContent();
+          const pageText = content.items.map((item) => item.str || '').join(' ');
+          fullText += (fullText ? '\n\n' : '') + pageText;
+        }
+        if (!cancelled && onPaperTextExtractedRef.current) {
+          onPaperTextExtractedRef.current(fullText);
+        }
+      } catch (err) {
+        if (!cancelled) console.error('PDF text extraction:', err);
+      }
+    };
+    load();
+    return () => { cancelled = true; };
+  }, [file, numPages]);
 
   useEffect(() => {
     if (screenshotClearTick === 0) return;

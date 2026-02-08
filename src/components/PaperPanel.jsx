@@ -4,8 +4,8 @@ import Toolbar from './PaperPanel/Toolbar';
 import PdfViewer from './PaperPanel/PdfViewer';
 import usePaperPanel from './PaperPanel/usePaperPanel';
 
-export default function PaperPanel({ onCopySelection, onModeChange, onTempScreenshot, mode, selectedText, screenshotImage, screenshotClearTick }) {
-    const { file, numPages, setNumPages, containerWidth, containerRef, options } = usePaperPanel({ onCopySelection, onTempScreenshot, mode, selectedText, screenshotImage, screenshotClearTick });
+export default function PaperPanel({ onCopySelection, onModeChange, onTempScreenshot, onPaperTextExtracted, mode, selectedText, screenshotImage, screenshotClearTick }) {
+    const { file, numPages, setNumPages, containerWidth, containerRef, options } = usePaperPanel({ onCopySelection, onTempScreenshot, onPaperTextExtracted, mode, selectedText, screenshotImage, screenshotClearTick });
     const [debouncedWidth, setDebouncedWidth] = useState(containerWidth);
 
     useEffect(() => {

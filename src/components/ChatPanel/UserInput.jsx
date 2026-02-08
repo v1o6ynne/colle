@@ -7,9 +7,10 @@ export default function UserInput({
   onResponse,
   onUserMessage,
   selectedText = '',
-  selectedTextId = '',     
+  selectedTextId = '',
   screenshotId = '',
-  screenshotImage = ''
+  screenshotImage = '',
+  paperText = ''
 }) {
   const [loading, setLoading] = useState(false);
 
@@ -95,6 +96,21 @@ export default function UserInput({
       }
 
       form.append('refs', JSON.stringify(refs));
+
+      // Fire discover-related-content in parallel when we have paper text and selection
+      const hasSelection = selectedText?.trim() || screenshotImage;
+      if (paperText.trim() && hasSelection) {
+        const discoverPayload = {
+          paperText: paperText.trim(),
+          selectedTexts: selectedText?.trim() ? [selectedText.trim()] : [],
+          imageDataUrls: screenshotImage ? [screenshotImage] : []
+        };
+        fetch('http://localhost:3000/discover-related-content', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(discoverPayload)
+        }).catch((err) => console.error('discover-related-content:', err));
+      }
 
       const res = await fetch('http://localhost:3000/assistant-chat', {
         method: 'POST',
