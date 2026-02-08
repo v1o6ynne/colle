@@ -14,14 +14,23 @@ export default function AcademicAssistant() {
   const [chatWidth, setChatWidth] = useState(420);
 
   const [screenshotId, setScreenshotId] = useState('');
+  const [selectedTextId, setSelectedTextId] = useState('');
 
   const handleCopySelection = (cleanedText) => {
-    setSelectedText(cleanedText);
+    const text = (cleanedText || '').trim();
+    setSelectedText(text);
+
+    if (text) {
+      const id = `highlight-${Date.now()}`;  
+      setSelectedTextId(id);
+    } else {
+      setSelectedTextId('');
+    }
   };
 
   const handleModeChange = (newMode) => setMode(newMode);
 
- const handleTempScreenshot = async (imageDataUrl) => {
+  const handleTempScreenshot = async (imageDataUrl) => {
   const id = `screenshot-${Date.now()}`;  
   setScreenshotId(id);
   setScreenshotImage(imageDataUrl);
@@ -34,32 +43,13 @@ export default function AcademicAssistant() {
     createdAt: new Date().toISOString()
   };
 
-//   try {
-//     const currentRes = await fetch("http://localhost:3000/user-data");
-//     const current = await currentRes.json();
-
-//     const nextScreenshots = [...(current.screenshots || []), screenshotObj];
-
-//     const saveRes = await fetch("http://localhost:3000/user-data", {
-//       method: "POST",
-//       headers: { "Content-Type": "application/json" },
-//       body: JSON.stringify({
-//         mode: "patch",
-//         data: { screenshots: nextScreenshots }
-//       })
-//     });
-
-//     if (!saveRes.ok) {
-//       const raw = await saveRes.text();
-//       console.error("save screenshot failed:", raw);
-//     }
-//   } catch (e) {
-//     console.error("save screenshot failed:", e);
-//   }
 };
 
 
-  const clearSelectedText = () => setSelectedText('');
+ const clearSelectedText = () => {
+    setSelectedText('');
+    setSelectedTextId('');
+  };
 
   const clearScreenshotImage = () => {
     setScreenshotImage('');
@@ -107,7 +97,7 @@ export default function AcademicAssistant() {
         screenshotClearTick={screenshotClearTick}
       />
 
-      {/* ✅ 关键：分隔条必须在这里 */}
+   
       <div className="resize-handle" onMouseDown={startResize} />
 
       <ChatPanel
@@ -115,6 +105,7 @@ export default function AcademicAssistant() {
         inputText={inputText}
         setInputText={setInputText}
         selectedText={selectedText}
+        selectedTextId={selectedTextId}
         screenshotId={screenshotId} 
         onClearSelectedText={clearSelectedText}
         screenshotImage={screenshotImage}

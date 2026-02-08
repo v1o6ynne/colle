@@ -10,6 +10,7 @@ export default function ChatPanel({
   style,
   inputText,
   setInputText,
+  selectedTextId,
   selectedText,
   onClearSelectedText,
   screenshotId,
@@ -101,6 +102,7 @@ export default function ChatPanel({
         <UserInput
           inputText={inputText}
           setInputText={setInputText}
+          selectedTextId={selectedTextId}
           selectedText={selectedText}
           screenshotId={screenshotId} 
           screenshotImage={screenshotImage}

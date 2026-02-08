@@ -7,23 +7,25 @@ export default function UserInput({
   onResponse,
   onUserMessage,
   selectedText = '',
+  selectedTextId = '',     
   screenshotId = '',
   screenshotImage = ''
 }) {
   const [loading, setLoading] = useState(false);
 
-  const buildPrompt = (prompt) => {
-    if (!selectedText) return prompt;
-    return `Context:\n\n${selectedText}\n\n-------------------------\n\nUser question:\n${prompt}\n`;
+  // ✅ 只给 LLM 用的 prompt（不会被存）
+  const buildPromptForLLM = (question) => {
+    if (!selectedText) return question;
+
+    return `Context:\n\n${selectedText}\n\nUser question:\n${question}`;
   };
 
-  // ✅ 只在“问 AI”时把截图写进 user-data（并且用 screenshotId，保证一致）
+  // ✅ 只在“问 AI”时存截图（方案 B）
   const saveScreenshotIfNeeded = async () => {
-    // 没有截图就不存
     if (!screenshotId || !screenshotImage) return;
 
     const screenshotObj = {
-      id: screenshotId, // ✅ ID 一致（和 refs 里用同一个）
+      id: screenshotId,
       imageDataUrl: screenshotImage,
       anchor: { type: 'screenshot' },
       createdAt: new Date().toISOString()
@@ -32,62 +34,66 @@ export default function UserInput({
     const currentRes = await fetch('http://localhost:3000/user-data');
     const current = await currentRes.json();
 
-    // ✅ 避免重复存同一张（按 id 去重）
-    const exists = (current.screenshots || []).some((s) => s.id === screenshotId);
+    const exists = (current.screenshots || []).some(
+      (s) => s.id === screenshotId
+    );
     if (exists) return;
 
-    const nextScreenshots = [...(current.screenshots || []), screenshotObj];
-
-    const saveRes = await fetch('http://localhost:3000/user-data', {
+    await fetch('http://localhost:3000/user-data', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         mode: 'patch',
-        data: { screenshots: nextScreenshots }
+        data: {
+          screenshots: [...(current.screenshots || []), screenshotObj]
+        }
       })
     });
-
-    if (!saveRes.ok) {
-      const raw = await saveRes.text();
-      throw new Error(raw || 'save screenshot failed');
-    }
   };
 
   const sendMessage = async () => {
-    const prompt = inputText.trim();
-    if (!prompt || loading) return;
+    const question = inputText.trim();
+    if (!question || loading) return;
 
-    onUserMessage?.(prompt);
+    // ✅ 1. 先存“纯用户问题”（会进入 assistantChats）
+    onUserMessage?.(question);
+
     setInputText('');
     setLoading(true);
 
     try {
-      // ✅ 先存截图（只在问 AI 时）
+      // ✅ 2. 问 AI 时才存截图
       await saveScreenshotIfNeeded();
 
       const form = new FormData();
 
-      // ✅ prompt
-      form.append('prompt', buildPrompt(prompt));
+      // ✅ 3. prompt = 给 LLM 的（含 Context）
+      form.append('prompt', buildPromptForLLM(question));
 
-      // ✅ refs（截图 ref 的 id = screenshotId，和 screenshots[].id 一致）
+      // ✅ 4. refs = Context 的结构化版本
       const refs = [];
-      if (selectedText) {
+
+      if (selectedText && selectedTextId) {
         refs.push({
-          id: `ctx-text-${Date.now()}`,
-          label: selectedText.slice(0, 60),
-          anchor: { type: 'text' }
+          id: selectedTextId,
+          label: selectedText,
+          anchor: {
+            type: 'text',
+            highlightId: selectedTextId
+          }
         });
       }
-      if (screenshotImage && screenshotId) {
+
+      if (screenshotId && screenshotImage) {
         refs.push({
-          id: screenshotId, // ✅ 一致
+          id: screenshotId,
           label: 'Screenshot',
           anchor: { type: 'screenshot' }
         });
-        // ✅ image
+
         form.append('imageDataUrl', screenshotImage);
       }
+
       form.append('refs', JSON.stringify(refs));
 
       const res = await fetch('http://localhost:3000/assistant-chat', {
@@ -95,16 +101,17 @@ export default function UserInput({
         body: form
       });
 
-      // ✅ 避免 500 时 res.json() 报 Unexpected end of JSON input
       const raw = await res.text();
-      let data = {};
+      let data;
       try {
         data = JSON.parse(raw);
       } catch {
         throw new Error(raw || `Server error ${res.status}`);
       }
 
-      if (!res.ok) throw new Error(data?.error || `Server error ${res.status}`);
+      if (!res.ok) {
+        throw new Error(data?.error || `Server error ${res.status}`);
+      }
 
       onResponse?.(data.text || '(No response)');
     } catch (err) {
