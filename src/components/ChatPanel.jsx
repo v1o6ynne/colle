@@ -7,11 +7,12 @@ import SelectImagesBox from './ChatPanel/SelectImagesBox';
 import UserInput from './ChatPanel/UserInput';
 
 export default function ChatPanel({
+  style,
   inputText,
   setInputText,
   mode,
-  selectedTexts,
-  onRemoveSelectedText,
+  selectedText,
+  onClearSelectedText,
   screenshotImages,
   onRemoveScreenshotImage
 }) {
@@ -21,6 +22,8 @@ export default function ChatPanel({
     { role: 'assistant', text: "Hello! I'm ready to analyze this paper." }
   ]);
 
+  const [pinnedHeight, setPinnedHeight] = useState(180); 
+
   const addAssistant = (text) => {
     setMessages((prev) => [...prev, { role: 'assistant', text }]);
   };
@@ -29,32 +32,64 @@ export default function ChatPanel({
     setMessages((prev) => [...prev, { role: 'user', text }]);
   };
 
-  const hasSelection = selectedTexts.length > 0 || screenshotImages.length > 0;
+  const hasSelection = (!!selectedText) || screenshotImages.length > 0;
+
+   const startResizePinned = (e) => {
+    e.preventDefault();
+
+    const startY = e.clientY;
+    const startH = pinnedHeight;
+
+    document.body.classList.add('no-select');
+
+    const onMove = (ev) => {
+      const delta = ev.clientY - startY; 
+      const next = Math.min(360, Math.max(80, startH + delta));
+      setPinnedHeight(next);
+    };
+
+    const onUp = () => {
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+      document.body.classList.remove('no-select');
+    };
+
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+  };
 
   return (
-    <aside className="chat-panel">
+    <aside className="chat-panel" style={style}>
       <ChatHeader activeTab={activeTab} setActiveTab={setActiveTab} />
 
-      {hasSelection && (
-        <div className="chat-pinned-selections">
-          <div className="chat-pinned-selections-label">Pinned context</div>
-          <div className="chat-pinned-selections-inner">
-            {selectedTexts.map((text, index) => (
-              <SelectTextBox
-                key={`text-${index}`}
-                selectedText={text}
-                onClear={() => onRemoveSelectedText(index)}
-              />
-            ))}
-            {screenshotImages.map((image, index) => (
-              <SelectImagesBox
-                key={`image-${index}`}
-                screenshotImage={image}
-                onClear={() => onRemoveScreenshotImage(index)}
-              />
-            ))}
+        {hasSelection && (
+        <>
+          <div
+            className="chat-pinned-selections"
+            style={{ maxHeight: pinnedHeight }} 
+          >
+            <div className="chat-pinned-selections-label">Pinned context</div>
+            <div className="chat-pinned-selections-inner">
+              {selectedText && (
+                <SelectTextBox
+                  key={`text-0`}
+                  selectedText={selectedText}
+                  onClear={onClearSelectedText}
+                />
+              )}
+              {screenshotImages.map((image, index) => (
+                <SelectImagesBox
+                  key={`image-${index}`}
+                  screenshotImage={image}
+                  onClear={() => onRemoveScreenshotImage(index)}
+                />
+              ))}
+            </div>
           </div>
-        </div>
+
+        
+          <div className="resize-handle-y" onMouseDown={startResizePinned} />
+        </>
       )}
 
       <div className="chat-content">
@@ -66,7 +101,7 @@ export default function ChatPanel({
         <UserInput
           inputText={inputText}
           setInputText={setInputText}
-          selectedTexts={selectedTexts}
+          selectedText={selectedText}
           screenshotImages={screenshotImages}
           onUserMessage={addUser}
           onResponse={addAssistant}

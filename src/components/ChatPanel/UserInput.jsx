@@ -6,18 +6,16 @@ export default function UserInput({
   setInputText,
   onResponse,
   onUserMessage,
-  selectedTexts = [],
+  selectedText = '',
   screenshotImages = []
 }) {
 
   const [loading, setLoading] = useState(false);
 
   const buildPrompt = (prompt) => {
-    if (!selectedTexts.length) return prompt;
+    if (!selectedText) return prompt;
 
-    const contextBlock = selectedTexts
-      .map((t, i) => `[Selection ${i + 1}]\n${t}`)
-      .join('\n\n');
+    return `\nContext:\n\n${selectedText}\n\n-------------------------\n\nUser question:\n${prompt}\n`;
 
     return `
 Context:
