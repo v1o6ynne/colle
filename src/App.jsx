@@ -18,6 +18,20 @@ export default function AcademicAssistant() {
   const [screenshotId, setScreenshotId] = useState('');
   const [selectedTextId, setSelectedTextId] = useState('');
 
+  const [contextImage, setContextImage] = useState(null);
+
+  useEffect(() => {
+    window.openContextImage = (imageDataUrl) => {
+      setContextImage(imageDataUrl);
+    };
+    window.closeContextImage = () => setContextImage(null);
+
+    return () => {
+      delete window.openContextImage;
+      delete window.closeContextImage;
+    };
+  }, []);
+
   useEffect(() => {
     fetch('http://localhost:3000/user-data')
       .then((r) => r.json())
@@ -50,17 +64,27 @@ export default function AcademicAssistant() {
   const handleModeChange = (newMode) => setMode(newMode);
 
   const handleTempScreenshot = async (imageDataUrl) => {
-  const id = `screenshot-${Date.now()}`;  
-  setScreenshotId(id);
-  setScreenshotImage(imageDataUrl);
+    const id = `screenshot-${Date.now()}`;  
+    setScreenshotId(id);
+    setScreenshotImage(imageDataUrl);
+    const pageNumber =
+    (typeof window.getPdfCurrentPage === "function" ? window.getPdfCurrentPage() : null) ||
+    window.__pdfCurrentPage ||
+    1;
+
+  // ✅ 抛给 ChatPanel（让它 setScreenshotAnchor）
+  window.onPdfScreenshotAnchor?.({
+    type: "screenshot",
+    pageNumber,
+  });
+
+  console.log("[capture screenshot] pageNumber =", pageNumber, {
+  hasGet: typeof window.getPdfCurrentPage === "function",
+  __pdfCurrentPage: window.__pdfCurrentPage,
+});
 
 
-  const screenshotObj = {
-    id,
-    imageDataUrl,
-    anchor: { type: "screenshot" },
-    createdAt: new Date().toISOString()
-  };
+    
 
 };
 
@@ -119,10 +143,10 @@ export default function AcademicAssistant() {
       />
 
    
-      <div className="resize-handle" onMouseDown={startResize} />
+      {/* <div className="resize-handle" onMouseDown={startResize} /> */}
 
       <ChatPanel
-        style={{ width: chatWidth }}
+        // style={{ width: chatWidth }}
         inputText={inputText}
         setInputText={setInputText}
         activeTab={activeTab}
@@ -135,6 +159,24 @@ export default function AcademicAssistant() {
         onClearScreenshotImage={clearScreenshotImage}
         paperText={paperText}
       />
+
+      {contextImage && (
+        <div
+          className="context-image-overlay"
+          onClick={() => setContextImage(null)}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div className="context-image-modal" onClick={(e) => e.stopPropagation()}>
+            <button className="context-image-close" onClick={() => setContextImage(null)}>
+              ✕
+            </button>
+            <img src={contextImage} alt="Context screenshot" className="context-image-img" />
+          </div>
+        </div>
+      )}
     </div>
+
+    
   );
 }

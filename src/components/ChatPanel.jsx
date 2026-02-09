@@ -32,15 +32,17 @@ export default function ChatPanel({
  
   const historyLoadedRef = useRef(false);
   const [textAnchor, setTextAnchor] = useState(null);
+  const [screenshotAnchor, setScreenshotAnchor] = useState(null);
 
   useEffect(() => {
-    window.onPdfTextAnchor = (anchor) => {
-      setTextAnchor(anchor);
-    };
+    window.onPdfTextAnchor = (anchor) => setTextAnchor(anchor);
+    window.onPdfScreenshotAnchor = (anchor) => setScreenshotAnchor(anchor);
+
     return () => {
       delete window.onPdfTextAnchor;
+      delete window.onPdfScreenshotAnchor;
     };
-  }, []);
+}, []);
   // useEffect(() => {
   //   if (activeTab !== 'Assistant') return;
   //   if (historyLoadedRef.current) return;
@@ -194,6 +196,7 @@ const addUser = (text, refs = []) => {
           onResponse={addAssistant}
           paperText={paperText}
           textAnchor={textAnchor}
+          screenshotAnchor={screenshotAnchor}
         />
       </div>
       )}

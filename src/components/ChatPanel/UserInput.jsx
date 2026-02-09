@@ -12,6 +12,7 @@ export default function UserInput({
   screenshotImage = '',
   paperText = '',
   textAnchor = null,
+  screenshotAnchor = null
 }) {
   const [loading, setLoading] = useState(false);
 
@@ -24,13 +25,16 @@ export default function UserInput({
 
   const saveScreenshotIfNeeded = async () => {
     if (!screenshotId || !screenshotImage) return;
+    console.log("[screenshot anchor debug]",
+    { screenshotAnchor, currentPage: window.__pdfCurrentPage}
+  );
 
     const screenshotObj = {
-      id: screenshotId,
-      imageDataUrl: screenshotImage,
-      anchor: { type: 'screenshot' },
-      createdAt: new Date().toISOString()
-    };
+    id: screenshotId,
+    imageDataUrl: screenshotImage,
+    anchor: screenshotAnchor || { type: "screenshot", pageNumber: window.__pdfCurrentPage || 1 },
+    createdAt: new Date().toISOString(),
+  };
 
     const currentRes = await fetch('http://localhost:3000/user-data');
     const current = await currentRes.json();
