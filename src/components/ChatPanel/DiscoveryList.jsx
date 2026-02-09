@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { RefreshCw, ChevronDown, ChevronRight, ThumbsUp, ThumbsDown, Download, X, ImageIcon } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
 
 const USER_DATA_URL = 'http://localhost:3000/user-data';
 const FLASHCARD_URL = 'http://localhost:3000/flashcard';
@@ -35,6 +36,9 @@ function DiscoveryItem({ discovery, discoveryIndex, onLikeChange }) {
   const related = discovery.related || { text: '', refs: [] };
   const refs = Array.isArray(related.refs) ? related.refs : [];
 
+  const [openRefIndex, setOpenRefIndex] = useState(null);
+
+
   const preview = isText
     ? (content.length > 120 ? content.slice(0, 120) + '…' : content)
     : null;
@@ -58,10 +62,23 @@ function DiscoveryItem({ discovery, discoveryIndex, onLikeChange }) {
       </button>
       {expanded && (
         <div className="discovery-item-body">
-          {related.text && (
-            <div className="discovery-related-text">{related.text}</div>
-          )}
-          <ul className="discovery-refs-list">
+          {/* {related.text && (
+            // <div className="discovery-related-text">{related.text}</div>
+            <div className="discovery-related-text">
+              <ReactMarkdown
+                components={{
+                  p: ({ children }) => <p style={{ margin: '8px 0' }}>{children}</p>,
+                  ul: ({ children }) => <ul style={{ margin: '8px 0 8px 18px' }}>{children}</ul>,
+                  li: ({ children }) => <li style={{ margin: '4px 0' }}>{children}</li>,
+                  h3: ({ children }) => <div style={{ fontWeight: 700, marginTop: 10 }}>{children}</div>,
+                  h2: ({ children }) => <div style={{ fontWeight: 800, marginTop: 12, fontSize: 15 }}>{children}</div>,
+                }}
+              >
+                {related.text}
+              </ReactMarkdown>
+            </div>
+          )} */}
+          {/* <ul className="discovery-refs-list">
             {refs.map((ref, refIndex) => (
               <li key={refIndex} className="discovery-ref-item">
                 <div className="discovery-ref-content">
@@ -92,7 +109,63 @@ function DiscoveryItem({ discovery, discoveryIndex, onLikeChange }) {
                 </div>
               </li>
             ))}
-          </ul>
+          </ul> */}
+          <ul className="discovery-refs-list">
+          {refs.map((ref, refIndex) => {
+            const isOpen = openRefIndex === refIndex;
+
+            return (
+              <li key={refIndex} className="discovery-ref-wrapper">
+
+                {/* ===== 主卡片 ===== */}
+                <div
+                  className={`discovery-ref-card ${isOpen ? 'open' : ''}`}
+                  onClick={() => setOpenRefIndex(isOpen ? null : refIndex)}
+                >
+                  <div className="discovery-ref-main">
+                    <div className="discovery-ref-text">
+                      <div className="discovery-ref-title">
+                        {ref.sectionRef}
+                      </div>
+
+                      <div className="discovery-ref-quote">
+                        “{ref.quote}”
+                      </div>
+                    </div>
+
+                    <div
+                      className="discovery-ref-actions"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <button
+                        className={`discovery-like-btn ${ref.liked === true ? 'active' : ''}`}
+                        onClick={() => onLikeChange(discoveryIndex, refIndex, true)}
+                      >
+                        <ThumbsUp size={16}/>
+                      </button>
+
+                      <button
+                        className={`discovery-like-btn dislike ${ref.liked === false ? 'active' : ''}`}
+                        onClick={() => onLikeChange(discoveryIndex, refIndex, false)}
+                      >
+                        <ThumbsDown size={16}/>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* ===== 展开 explanation（独立区域）===== */}
+                {isOpen && ref.explanation && (
+                  <div className="discovery-ref-expand">
+                    {ref.explanation}
+                  </div>
+                )}
+
+              </li>
+            );
+          })}
+        </ul>
+
         </div>
       )}
     </div>

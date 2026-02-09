@@ -111,7 +111,7 @@ Your task: Find the 3 most related sections or passages in the paper to this sel
 3. Explain why it is related: is it the same concept, impact, implementation detail, limitation, definition, or something else?
 
 Format your response as clear prose (reasoning first, then the 3 sections with the above). At the very end, output a single JSON array of refs so we can link to the paper. Use this exact format on the last line:
-REFS: [{"sectionRef": "Section heading", "quote": "exact phrase from paper"}]`;
+REFS: [{"sectionRef": "Section heading", "quote": "exact phrase from paper", "explanation":"..."}]`;
 
 async function discoverRelatedContent(paperText, selection, options = {}) {
   const { isImage = false, inlineData = null } = options;
@@ -183,6 +183,7 @@ app.post('/discover-related-content', async (req, res) => {
       const refs = (r.refs || []).map((ref) => ({
         sectionRef: ref.sectionRef || ref.section_ref || '',
         quote: ref.quote || '',
+        explanation: ref.explanation || ref.reason || '',
         liked: null
       }));
       userData.discoveries.push({
