@@ -31,6 +31,16 @@ export default function ChatPanel({
 
  
   const historyLoadedRef = useRef(false);
+  const [textAnchor, setTextAnchor] = useState(null);
+
+  useEffect(() => {
+    window.onPdfTextAnchor = (anchor) => {
+      setTextAnchor(anchor);
+    };
+    return () => {
+      delete window.onPdfTextAnchor;
+    };
+  }, []);
   // useEffect(() => {
   //   if (activeTab !== 'Assistant') return;
   //   if (historyLoadedRef.current) return;
@@ -92,14 +102,13 @@ export default function ChatPanel({
   return () => controller.abort();
 }, [activeTab]);
 
-  const addAssistant = (text) => {
-    setMessages((prev) => [...prev, { role: 'assistant', text }]);
-  };
+ const addAssistant = (text, refs = []) => {
+  setMessages((prev) => [...prev, { role: 'assistant', text, refs }]);
+};
 
-  const addUser = (text) => {
-    setMessages((prev) => [...prev, { role: 'user', text }]);
-  };
-
+const addUser = (text, refs = []) => {
+  setMessages((prev) => [...prev, { role: 'user', text, refs }]);
+};
   const hasSelection = (!!selectedText) || !!screenshotImage;
   const showPinnedContext = activeTab === 'Assistant' && hasSelection;
 
@@ -184,6 +193,7 @@ export default function ChatPanel({
           onUserMessage={addUser}
           onResponse={addAssistant}
           paperText={paperText}
+          textAnchor={textAnchor}
         />
       </div>
       )}

@@ -985,3 +985,11 @@ body, html {
     background: var(--border-color); 
     margin: 0 10px; 
 }
+
+.message.clickable-context {
+  cursor: pointer;
+}
+
+.message.clickable-context:hover {
+  filter: brightness(0.98);
+}

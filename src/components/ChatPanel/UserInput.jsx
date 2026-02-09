@@ -10,7 +10,8 @@ export default function UserInput({
   selectedTextId = '',
   screenshotId = '',
   screenshotImage = '',
-  paperText = ''
+  paperText = '',
+  textAnchor = null,
 }) {
   const [loading, setLoading] = useState(false);
 
@@ -58,7 +59,7 @@ export default function UserInput({
     const highlightObj = {
       id: selectedTextId,
       text: selectedText,
-      anchor: { type: 'text' },
+      anchor: textAnchor || { type: "text" },
       createdAt: new Date().toISOString()
     };
 
@@ -86,7 +87,8 @@ export default function UserInput({
     const question = inputText.trim();
     if (!question || loading) return;
 
-    onUserMessage?.(question);
+    // onUserMessage?.(question,refs);
+    const refs = [];
 
     setInputText('');
     setLoading(true);
@@ -95,11 +97,15 @@ export default function UserInput({
       await saveScreenshotIfNeeded();
       await saveHighlightIfNeeded();
 
-      const form = new FormData();
-      form.append('prompt', buildPromptForLLM(question));
+      onUserMessage?.(question,refs);
+
+      
+
+      // const form = new FormData();
+      // form.append('prompt', buildPromptForLLM(question));
 
 
-      const refs = [];
+      
 
       if (selectedText && selectedTextId) {
         refs.push({
@@ -110,6 +116,9 @@ export default function UserInput({
           }
         });
       }
+
+      const form = new FormData();
+      form.append('prompt', buildPromptForLLM(question));
 
       if (screenshotId && screenshotImage) {
         refs.push({
@@ -155,7 +164,7 @@ export default function UserInput({
         throw new Error(data?.error || `Server error ${res.status}`);
       }
 
-      onResponse?.(data.text || '(No response)');
+      onResponse?.(data.text || '(No response)', data.refs || refs)
     } catch (err) {
       console.error(err);
       onResponse?.('⚠️ Failed to reach assistant.');
