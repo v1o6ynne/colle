@@ -13,10 +13,21 @@ const FLASHCARD_MODEL = 'gemini-3-pro-image-preview';
 const upload = multer({ storage: multer.memoryStorage() });
 const app = express();
 
+const allowedOrigins = new Set([
+  "http://localhost:5173",
+  "https://colle-two.vercel.app",
+]);
+
 app.use(cors({
-  origin: ['http://localhost:5173'],
-  methods: ['GET', 'POST', 'OPTIONS'],
+  origin: (origin, cb) => {
+    if (!origin) return cb(null, true);               // allow curl/postman
+    if (origin.endsWith(".vercel.app")) return cb(null, true); // allow preview URLs
+    if (allowedOrigins.has(origin)) return cb(null, true);
+    return cb(new Error("Not allowed by CORS: " + origin), false);
+  },
+  methods: ["GET", "POST", "OPTIONS"],
 }));
+
 
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
