@@ -498,6 +498,15 @@ body, html {
     font-style: italic;
 }
 
+/* 给 textLayer 的 span 上色 */
+.pdf-quote-highlight {
+  background: rgba(255, 230, 120, 0.75);
+  border-radius: 3px;
+  padding: 0 2px;
+}
+
+/* 如果你觉得太刺眼可以改更淡一点 */
+
 .discovery-ref-actions {
     display: flex;
     gap: 4px;

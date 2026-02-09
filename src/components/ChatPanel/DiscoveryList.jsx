@@ -128,9 +128,21 @@ function DiscoveryItem({ discovery, discoveryIndex, onLikeChange }) {
                         {ref.sectionRef}
                       </div>
 
-                      <div className="discovery-ref-quote">
+                      {/* <div className="discovery-ref-quote">
                         “{ref.quote}”
-                      </div>
+                      </div> */}
+                      <span
+                      className="discovery-ref-quote"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        console.log('jump fn =', window.jumpToQuote);
+                        setOpenRefIndex(refIndex);       
+                        window.jumpToQuote(ref.quote);  
+                      }}
+                    >
+                      “{ref.quote}”
+                    </span>
+
                     </div>
 
                     <div
