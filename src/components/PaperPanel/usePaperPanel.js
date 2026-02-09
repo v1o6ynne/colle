@@ -17,8 +17,12 @@ export default function usePaperPanel({
   screenshotImage,
   screenshotClearTick,
 }) {
-  const [file] = useState('./2208.11144v1.pdf');
+  const [file, setFile] = useState('./2208.11144v1.pdf');
   const [numPages, setNumPages] = useState(null);
+
+  useEffect(() => {
+    setNumPages(null);
+  }, [file]);
   const onPaperTextExtractedRef = useRef(onPaperTextExtracted);
   useEffect(() => {
     onPaperTextExtractedRef.current = onPaperTextExtracted;
@@ -135,7 +139,7 @@ export default function usePaperPanel({
     const ctx = canvas.getContext('2d');
 
     const drawRect = (x, y, width, height) => {
-      ctx.strokeStyle = '#dc2626';
+      ctx.strokeStyle = '#c084fc';
       ctx.lineWidth = 2;
       ctx.setLineDash([5, 5]);
       ctx.strokeRect(x, y, width, height);
@@ -285,6 +289,7 @@ export default function usePaperPanel({
 
   return {
     file,
+    setFile,
     numPages,
     setNumPages,
     containerWidth,

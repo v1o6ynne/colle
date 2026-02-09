@@ -194,6 +194,7 @@ export default function UserInput({
         rows="1"
       />
       <button className="send-btn" onClick={sendMessage} disabled={loading}>
+        <span className="send-btn-text">Send</span>
         <ArrowUp size={18} />
       </button>
     </div>
