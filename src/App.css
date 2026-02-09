@@ -1,15 +1,16 @@
 :root {
-    --primary-red: #dc2626;
+    --primary: #c084fc;
+    --primary-dark: #a855f7;
     --border-color: #f0f0f0;
     --bg-gray: #f8f9fa;
     --text-main: #1f2937;
     --text-light: #6b7280;
-    /* Vivid blue theme for pinned selections */
-    --pinned-blue: #2563eb;
-    --pinned-blue-light: #3b82f6;
-    --pinned-blue-bg: #eff6ff;
-    --pinned-blue-border: #93c5fd;
-    --pinned-blue-muted: #1e40af;
+    /* Purple theme for pinned selections & accents */
+    --pinned-blue: #a855f7;
+    --pinned-blue-light: #c084fc;
+    --pinned-blue-bg: #f3e8ff;
+    --pinned-blue-border: #e9d5ff;
+    --pinned-blue-muted: #6b21a8;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -33,7 +34,7 @@ body, html {
 }
 
 .logo { 
-    color: var(--primary-red); 
+    color: var(--primary); 
     font-size: 24px; 
     font-weight: bold; 
     margin-bottom: 40px; 
@@ -47,7 +48,7 @@ body, html {
 }
 
 .nav-icons svg.active { 
-    color: var(--primary-red); 
+    color: var(--primary); 
     scale: 1.2;
 }
 
@@ -90,6 +91,37 @@ body, html {
     display: flex;
     align-items: center;
     gap: 10px;
+}
+
+.toolbar-file-input {
+    position: absolute;
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    overflow: hidden;
+    z-index: -1;
+}
+
+.toolbar-upload-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 6px 12px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--primary-dark);
+    background: #f3e8ff;
+    border: 1px solid #e9d5ff;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.toolbar-upload-btn:hover {
+    background: #ede9fe;
+    border-color: #ddd6fe;
+    color: var(--primary-dark);
 }
 
 .icon-btn-wrap {
@@ -158,7 +190,7 @@ body, html {
 
 .icon-btn:hover {
     background: var(--bg-gray);
-    color: var(--primary-red);
+    color: var(--primary);
 }
 
 .icon-btn:disabled {
@@ -174,7 +206,7 @@ body, html {
 }
 
 .icon-btn.active {
-    background: var(--primary-red);
+    background: var(--primary);
     color: white;
 }
 
@@ -194,8 +226,8 @@ body, html {
 .btn-copy:hover,
 .btn-download:hover {
     background: var(--bg-gray);
-    border-color: var(--primary-red);
-    color: var(--primary-red);
+    border-color: var(--primary);
+    color: var(--primary);
 }
 
 #viewerContainer { 
@@ -259,13 +291,13 @@ body, html {
 .tab.active { 
     color: black; 
     font-weight: bold; 
-    border-bottom: 2px solid var(--primary-red); 
+    border-bottom: 2px solid var(--primary); 
     padding-bottom: 2px; 
 }
-/* Pinned upper section: selected text & figure areas (vivid blue) */
+/* Pinned upper section: selected text & figure areas (purple theme) */
 .chat-pinned-selections {
     flex-shrink: 0;
-    background: linear-gradient(180deg, var(--pinned-blue-bg) 0%, #dbeafe 100%);
+    background: linear-gradient(180deg, var(--pinned-blue-bg) 0%, #ede9fe 100%);
     border-bottom: 2px solid var(--pinned-blue-border);
     padding: 14px 20px;
     max-height: 220px;
@@ -309,9 +341,27 @@ body, html {
 
 .chat-content { 
     flex: 1; 
+    display: flex;
+    flex-direction: column;
     padding: 20px; 
-    overflow-y: auto; 
     min-height: 0;
+    overflow: hidden;
+}
+
+.chat-content .helper-cards {
+    flex-shrink: 0;
+}
+
+.chat-content-scroll-wrap {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+}
+
+.chat-content .discovery-list {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
 }
 
 .helper-cards {
@@ -339,7 +389,7 @@ body, html {
     flex-shrink: 0;
     width: 40px;
     height: 40px;
-    background: linear-gradient(135deg, var(--primary-red), #ef4444);
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
     border-radius: 8px;
     display: flex;
     align-items: center;
@@ -371,6 +421,46 @@ body, html {
     line-height: 1.4;
 }
 
+.discovery-helper-thumbnail-wrap {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.discovery-helper-thumbnail {
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: none;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #f8f9fa;
+    cursor: pointer;
+    transition: opacity 0.2s, box-shadow 0.2s;
+}
+
+.discovery-helper-thumbnail:hover {
+    opacity: 0.95;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.discovery-helper-thumbnail img {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 140px;
+    object-fit: contain;
+    background: #fff;
+}
+
+.discovery-helper-no-card {
+    margin: 0;
+    font-size: 13px;
+    color: var(--text-light);
+    font-style: italic;
+    padding: 8px 0;
+}
+
 .chat-input-area { 
     padding: 20px; 
     border-top: 1px solid var(--border-color); 
@@ -386,6 +476,7 @@ body, html {
 
 .discovery-list-content {
     flex: 1;
+    min-height: 0;
     overflow-y: auto;
     padding: 0 4px;
 }
@@ -533,7 +624,7 @@ body, html {
 }
 
 .discovery-like-btn.dislike.active {
-    color: #dc2626;
+    color: var(--primary);
 }
 
 .discovery-footer {
@@ -560,7 +651,7 @@ body, html {
 }
 
 .discovery-refresh-btn:hover:not(:disabled) {
-    background: #dbeafe;
+    background: #ede9fe;
     color: var(--pinned-blue);
 }
 
@@ -742,7 +833,7 @@ body, html {
 }
 
 .visual-card-close-btn:hover {
-    color: #dc2626;
+    color: var(--primary);
 }
 
 .visual-card-image {
@@ -760,8 +851,8 @@ body, html {
 }
 
 .selected-text-box {
-    background: #f0f7ff;
-    border: 1px solid #bfdbfe;
+    background: #f3e8ff;
+    border: 1px solid #e9d5ff;
     border-radius: 6px;
     padding: 12px;
     margin-bottom: 12px;
@@ -834,8 +925,8 @@ body, html {
 }
 
 .clear-btn:hover {
-    color: var(--primary-red);
-    background-color: rgba(239, 68, 68, 0.1);
+    color: var(--primary);
+    background-color: rgba(168, 85, 247, 0.1);
 }
 
 .screenshot-actions {
@@ -868,12 +959,12 @@ body, html {
 }
 
 .cancel-btn {
-    background: #ef4444;
+    background: var(--primary-dark);
     color: white;
 }
 
 .cancel-btn:hover {
-    background: #dc2626;
+    background: var(--primary);
 }
 .input-container { 
     background: #f9f9f9; 
@@ -892,16 +983,22 @@ body, html {
     font-size: 14px; 
 }
 .send-btn { 
-    background: var(--primary-red); 
+    background: var(--primary); 
     color: white; 
     border: none; 
-    width: 30px; 
-    height: 30px; 
-    border-radius: 50%; 
+    padding: 8px 14px;
+    border-radius: 20px; 
     cursor: pointer; 
     display: flex; 
     align-items: center; 
-    justify-content: center; 
+    justify-content: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.send-btn .send-btn-text {
+    white-space: nowrap;
 }
 
 .resize-handle {
@@ -922,7 +1019,7 @@ body, html {
 }
 
 .resize-handle:hover::before {
-  background: var(--primary-red);
+  background: var(--primary);
 }
 
 .resize-handle-y {
@@ -944,7 +1041,7 @@ body, html {
 }
 
 .resize-handle-y:hover::before {
-  background: var(--primary-red);
+  background: var(--primary);
 }
 
 
@@ -964,19 +1061,19 @@ body, html {
 }
 
 .message.ai-message {
-    background: linear-gradient(135deg, #f0f7ff 0%, #e0f2fe 100%);
-    border: 1px solid #bfdbfe;
-    border-left: 4px solid var(--primary-red);
+    background: linear-gradient(135deg, #faf5ff 0%, #f5f3ff 100%);
+    border: 1px solid #ede9fe;
+    border-left: 4px solid var(--primary);
     color: var(--text-main);
-    box-shadow: 0 2px 8px rgba(191, 219, 254, 0.4);
+    box-shadow: 0 1px 4px rgba(192, 132, 252, 0.08);
 }
 
 .message.user-message {
-    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
-    border: 1px solid #fca5a5;
+    background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+    border: 1px solid #d8b4fe;
     color: var(--text-main);
     margin-left: 30px;
-    box-shadow: 0 2px 8px rgba(252, 165, 165, 0.4);
+    box-shadow: 0 2px 8px rgba(192, 132, 252, 0.25);
 }
 
 .divider { 

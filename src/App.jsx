@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import Sidebar from './components/Sidebar';
 import PaperPanel from './components/PaperPanel';
 import ChatPanel from './components/ChatPanel';
 import './App.css';
@@ -128,8 +127,6 @@ export default function AcademicAssistant() {
 
   return (
     <div className="app-container">
-      <Sidebar />
-
       <PaperPanel
         mode={mode}
         onCopySelection={handleCopySelection}

@@ -172,14 +172,13 @@ const addUser = (text, refs = []) => {
       )}
 
       <div className="chat-content">
+        <HelperCards activeTab={activeTab} />
         {activeTab === 'Discovery' ? (
-          // <DiscoveryList />
           <DiscoveryList refreshKey={discoveryRefreshKey} />
         ) : (
-          <>
-            <HelperCards activeTab={activeTab} />
+          <div className="chat-content-scroll-wrap">
             <Messages activeTab={activeTab} messages={messages} />
-          </>
+          </div>
         )}
       </div>
 
