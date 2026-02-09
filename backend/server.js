@@ -1,8 +1,6 @@
-
 const express = require('express');
 const multer = require('multer');
 const cors = require('cors');
-
 const path = require('path');
 const fs = require('fs/promises');
 const { extractGeminiParts } = require('./gemini-utils');
@@ -14,6 +12,7 @@ const FLASHCARD_MODEL = 'gemini-3-pro-image-preview';
 
 const upload = multer({ storage: multer.memoryStorage() });
 const app = express();
+
 app.use(cors({
   origin: ['http://localhost:5173'],
   methods: ['GET', 'POST', 'OPTIONS'],
@@ -29,8 +28,10 @@ const defaultUserData = () => ({
   screenshots: [],
   assistantChats: [],
   notes: [],
-  figures: [],
-  flashcards: []
+  noteCards: [],
+  flashcards: [],
+  related: [],
+  discoveries: []
 });
 
 async function ensureUserData() {
@@ -45,7 +46,10 @@ async function ensureUserData() {
 async function readUserData() {
   await ensureUserData();
   const raw = await fs.readFile(USER_DATA_PATH, 'utf8');
-  return JSON.parse(raw);
+  const data = JSON.parse(raw);
+  if (!Array.isArray(data.related)) data.related = [];
+  if (!Array.isArray(data.discoveries)) data.discoveries = [];
+  return data;
 }
 
 async function writeUserData(data) {
@@ -92,6 +96,111 @@ async function callGemini({ model, contents }) {
   return ai.models.generateContent({ model, contents });
 }
 
+const DISCOVER_RELATED_PROMPT = (paperText, isImage) => `You are given the full text of an academic paper and one ${isImage ? 'screenshot/figure from the paper' : 'text selection from the paper'}.
+
+Full paper text (by sections):
+---
+${paperText}
+---
+
+User selection: ${isImage ? '[See the attached image]' : '[See below]'}
+
+Your task: Find the 3 most related sections or passages in the paper to this selection. For each of the 3 sections:
+1. Identify the section (heading or short label, e.g. "Abstract", "Methodology", "Figure 2").
+2. Quote a short exact phrase (8–20 words) from the paper that pinpoints the passage.
+3. Explain why it is related: is it the same concept, impact, implementation detail, limitation, definition, or something else?
+
+Format your response as clear prose (reasoning first, then the 3 sections with the above). At the very end, output a single JSON array of refs so we can link to the paper. Use this exact format on the last line:
+REFS: [{"sectionRef": "Section heading", "quote": "exact phrase from paper", "explanation":"..."}]`;
+
+async function discoverRelatedContent(paperText, selection, options = {}) {
+  const { isImage = false, inlineData = null } = options;
+  const parts = [{ text: DISCOVER_RELATED_PROMPT(paperText, isImage) }];
+  if (isImage && inlineData) {
+    parts.push(inlineData);
+  } else if (!isImage && typeof selection === 'string' && selection.trim()) {
+    parts[0].text += `\n\nSelected text:\n"${selection.trim()}"`;
+  } else if (isImage) {
+    return { text: '', refs: [] };
+  }
+
+  const response = await callGemini({
+    model: TEXT_MODEL,
+    contents: [{ role: 'user', parts }]
+  });
+  const result = extractGeminiParts(response);
+  const text = result.text || '';
+
+  let refs = [];
+  const refsMatch = text.match(/REFS:\s*(\[[\s\S]*?\])\s*$/m);
+  if (refsMatch) {
+    try {
+      refs = JSON.parse(refsMatch[1].trim());
+    } catch (e) {
+      refs = [];
+    }
+  }
+
+  return { text, refs };
+}
+
+app.post('/discover-related-content', async (req, res) => {
+  try {
+    const paperText = (req.body.paperText || '').trim();
+    const selectedTexts = Array.isArray(req.body.selectedTexts) ? req.body.selectedTexts : [];
+    const imageDataUrls = Array.isArray(req.body.imageDataUrls) ? req.body.imageDataUrls : [];
+
+    if (!paperText) {
+      return res.status(400).json({ error: 'Missing paperText' });
+    }
+    if (selectedTexts.length === 0 && imageDataUrls.length === 0) {
+      return res.status(400).json({ error: 'Provide at least one selectedText or imageDataUrl' });
+    }
+
+    const items = [];
+    selectedTexts.forEach((t) => {
+      if (typeof t === 'string' && t.trim()) items.push({ type: 'text', value: t.trim() });
+    });
+    imageDataUrls.forEach((dataUrl) => {
+      if (dataUrl && typeof dataUrl === 'string') items.push({ type: 'image', value: dataUrl });
+    });
+
+    const results = await Promise.all(
+      items.map((item) =>
+        item.type === 'text'
+          ? discoverRelatedContent(paperText, item.value, { isImage: false })
+          : discoverRelatedContent(paperText, null, {
+              isImage: true,
+              inlineData: dataUrlToInlineData(item.value)
+            })
+      )
+    );
+
+    const userData = await readUserData();
+    if (!Array.isArray(userData.discoveries)) userData.discoveries = [];
+    results.forEach((r, i) => {
+      const item = items[i];
+      const refs = (r.refs || []).map((ref) => ({
+        sectionRef: ref.sectionRef || ref.section_ref || '',
+        quote: ref.quote || '',
+        explanation: ref.explanation || ref.reason || '',
+        liked: null
+      }));
+      userData.discoveries.push({
+        selectionType: item.type,
+        selectionContent: item.value,
+        related: { text: r.text || '', refs }
+      });
+    });
+    await writeUserData(userData);
+
+    res.json({ ok: true, count: results.length });
+  } catch (error) {
+    console.error('discover-related-content:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 app.get('/user-data', async (req, res) => {
   try {
     const data = await readUserData();
@@ -120,8 +229,7 @@ Rules:
 1. Focus on the user's question and any context they provide (highlighted text from the paper). Answer concisely and directly.
 2. When your answer refers to specific parts of the paper, insert an inline reference using this exact format: [ref: Short Heading]. The heading should be a concise label (2-5 words) that identifies the relevant section, figure, or concept in the paper. Examples: [ref: Abstract], [ref: Figure 3], [ref: Related Work], [ref: Methodology], [ref: Results Table].
 3. Place references naturally within the text, right after the claim or statement they support. Do not group all references at the end.
-4. Only add references when they genuinely help the reader locate supporting content in the paper. Do not over-reference.
-5. Keep answers clear and concise. Use bullet points or short paragraphs when appropriate.`;
+4. Keep answers clear and concise. Use bullet points or short paragraphs when appropriate.`;
 
 app.post('/assistant-chat', upload.single('imageFile'), async (req, res) => {
   try {
@@ -151,35 +259,53 @@ app.post('/assistant-chat', upload.single('imageFile'), async (req, res) => {
       contents: [{ role: 'user', parts }]
     });
     const result = extractGeminiParts(response);
+
+    const userData = await readUserData();
+    userData.assistantChats.push({ role: 'user', text: prompt, refs });
+    userData.assistantChats.push({ role: 'assistant', text: result.text || '', refs });
+    await writeUserData(userData);
+
     res.json({ text: result.text, images: result.images, refs });
   } catch (error) {
-    console.error("ASSISTANT_CHAT_ERROR:", error);
-    res.status(500).json({ error: error.message, stack: error.stack });
+    res.status(500).json({ error: error.message });
   }
 });
 
-app.post('/figure-description', upload.single('imageFile'), async (req, res) => {
+app.post('/screenshot-analyze', upload.single('imageFile'), async (req, res) => {
   try {
-    if (!req.file && !req.body.imageDataUrl) {
-      return res.status(400).json({ error: 'Missing image' });
+    if (!req.body.imageDataUrl) {
+      return res.status(400).json({ error: 'Missing screenshot image' });
     }
-    const caption = req.body.caption || '';
+    const paperText = req.body.paperText || '[]';
     const parts = [
-      { text: `Generate a concise description of the figure in one-paragraph for low-vision readers. Caption: ${caption}` }
+      { text: `You are a research paper analyst. You are given a screenshot taken from an academic paper and the full text of the paper organized by sections.
+
+Your task: Go through EVERY section of the paper thoroughly. Find all passages that are relevant to, discuss the same topic as, explain, elaborate on, or provide context for the content visible in this screenshot. Think about what concept, method, result, or figure the screenshot shows, then find everywhere in the paper that discusses the same thing.
+
+Consider all types of relevance:
+- Passages that define or introduce the concept shown in the screenshot
+- Methodology sections that describe how what's shown was done
+- Results or findings that relate to the content in the screenshot
+- Discussion passages that interpret or contextualize the screenshot content
+- Related work that references similar concepts
+- Any other passage in the paper that a reader would benefit from reading alongside this screenshot
+
+For each relevant passage, return:
+- "text": A 1-3 sentence summary of why this passage is relevant and what it says
+- "sectionRef": The exact section heading from the paper where this passage appears
+- "quote": An exact short phrase (8-15 words) copied verbatim from the paper text that uniquely identifies where this passage is, so the reader can locate it precisely
+
+Return a JSON array of these objects. Return 3-8 highlights, ordered from most to least relevant. Cover different sections of the paper — do not cluster all highlights from one section.
+
+Return ONLY the JSON array, no other text.
+
+Paper sections:
+${paperText}` }
     ];
 
-    if (req.file) {
-      parts.push({
-        inlineData: {
-          mimeType: req.file.mimetype,
-          data: req.file.buffer.toString('base64')
-        }
-      });
-    } else {
-      const inlineData = dataUrlToInlineData(req.body.imageDataUrl);
-      if (inlineData) {
-        parts.push(inlineData);
-      }
+    const inlineData = dataUrlToInlineData(req.body.imageDataUrl);
+    if (inlineData) {
+      parts.push(inlineData);
     }
 
     const response = await callGemini({
@@ -187,66 +313,120 @@ app.post('/figure-description', upload.single('imageFile'), async (req, res) => 
       contents: [{ role: 'user', parts }]
     });
     const result = extractGeminiParts(response);
-    res.json({ text: result.text, images: result.images });
+
+    let highlights = [];
+    try {
+      const cleaned = (result.text || '').replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
+      highlights = JSON.parse(cleaned);
+    } catch (e) {
+      highlights = [{ text: result.text || 'No relevant passages found.', sectionRef: 'Unknown' }];
+    }
+
+    res.json({ highlights });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
+const FLASHCARD_PROMPT = `You are creating a VISUAL THINKING CARD from the user's reading session. The user has provided:
+1) Selected text excerpts they highlighted from the paper
+2) Screenshot images they captured from the paper
+3) Their assistant chat (questions and answers)
+4) For each selection, "related" passages (why other parts of the paper connect to it)
+
+Your task: Generate ONE image that illustrates the most important take-aways from this session.
+
+CRITICAL RULES:
+- Do NOT redraw, replace, or alter the user's original screenshots or selected text. They must appear in your output exactly as provided (same content, same layout where possible).
+- ADD annotations, coloring, and overlays ON the provided material: highlights, underlines, circles, arrows, callout boxes, labels, and short captions to emphasize key concepts, connections, and main take-aways.
+- Use a consistent visual language: soft colors (e.g. light green, sky blue, yellow, pink) for highlights and annotations so the original content stays readable.
+- Integrate the selected text excerpts into the layout (as quote blocks or panels) and add coloring or underlining to stress important phrases.
+- If multiple screenshots are provided, include them in the card and add annotations on each to show what matters and how it links to the rest.
+- Summarize the main take-aways from the assistant chat and related content as short labels or a small "Key points" area, with arrows or numbers pointing to the relevant parts of the screenshots/text.
+- Keep the overall layout clear and scannable (e.g. horizontal 3:4). Use white or very light background. Make it feel like an annotated study sheet, not a replacement of the source material.`;
+
 app.post('/flashcard', upload.single('imageFile'), async (req, res) => {
   try {
-    const highlightedFigure = req.body.highlighted_figure || '';
-    const highlightedText = req.body.highlighted_text || '';
-    const userNote = req.body.user_note || '';
-    const userAiInteraction = req.body.user_ai_interaction || '';
-    const paper = req.body.paper || '';
+    const userData = await readUserData();
 
-    const prompt = `Please extract the core theme and key points from the input PDF, highlighted content and the notes, and generate an infographic in a cute digital cartoon style:
-1. Visual Style:
-Use a digital hand-drawn cartoon illustration style with soft, rounded lines that feel friendly and approachable. The overall visual should be lively, vivid, and suitable for easy-to-understand educational or science communication.
-2. Layout and Background:
-Use a horizontal (3:4) layout. The background should be pure white or a very light solid color, clean and minimal, highlighting the main information while preserving ample white space.
-3. Color Scheme:
-Use soft, bright macaron color tones. The primary color should be light green, complemented by sky blue, beige yellow, light orange, light pink, etc. Colors should be harmonious with moderate saturation, avoiding overly vivid or heavy tones.
-4. Graphic Elements:
-Add a small number of simple cartoon elements and icons with cute expressions or anthropomorphic features (e.g., smiling sun, clouds, chemical molecules) to enhance fun and visual memorability.
-Use clear flowcharts, geometric shapes (such as rounded rectangles), and directional arrows to organize and guide information reading.
-If there are sensitive individuals or copyrighted content, draw similar cartoon substitute figures instead, but do not refuse to generate.
-5. Typography:
-All images and text must follow a cartoon style. Use rounded, clear, and easy-to-read sans-serif fonts. Font colors should match the overall color palette, and avoid any realistic or photographic-style visual elements.
-6. Information Presentation:
-Keep information concise. Use visual design to highlight keywords and core concepts, with generous white space to ensure key points can be grasped at a glance. Emphasize the highlighted content if there is any. Unless otherwise specified, the language should match the language of the input content.
+    const textParts = [];
+    const imageParts = [];
 
-paper:${paper}
-metadata:${JSON.stringify({
-      highlighted_figure: highlightedFigure,
-      highlighted_text: highlightedText,
-      user_note: userNote,
-      user_ai_interaction: userAiInteraction
-    })}`;
+    const screenshots = userData.screenshots || [];
+    const discoveries = userData.discoveries || [];
+    const assistantChats = userData.assistantChats || [];
+    const highlights = userData.highlights || [];
 
-    const parts = [{ text: prompt }];
-    if (req.file) {
-      parts.push({
-        inlineData: {
-          mimeType: req.file.mimetype,
-          data: req.file.buffer.toString('base64')
-        }
-      });
-    } else if (req.body.imageDataUrl) {
-      const inlineData = dataUrlToInlineData(req.body.imageDataUrl);
-      if (inlineData) {
-        parts.push(inlineData);
+    discoveries.forEach((d, i) => {
+      const related = d.related || { text: '', refs: [] };
+      const refs = related.refs || [];
+      textParts.push(
+        `[Selection ${i + 1}] ${d.selectionType === 'text' ? 'Selected text' : 'Screenshot'}:`
+      );
+      if (d.selectionType === 'text') {
+        textParts.push(`"${(d.selectionContent || '').slice(0, 500)}"`);
       }
+      textParts.push(`Related: ${related.text || '(none)'}`);
+      refs.forEach((r) => {
+        textParts.push(`  - ${r.sectionRef || ''}: "${(r.quote || '').slice(0, 80)}"`);
+      });
+    });
+
+    if (highlights.length) {
+      textParts.push('\n--- Additional highlights from the paper ---');
+      highlights.slice(0, 20).forEach((h) => {
+        const t = typeof h === 'string' ? h : (h.text || h.content || '');
+        if (t) textParts.push(`- ${t.slice(0, 200)}`);
+      });
     }
+
+    if (assistantChats.length) {
+      textParts.push('\n--- Assistant chat (Q&A) ---');
+      assistantChats.slice(-12).forEach((m) => {
+        textParts.push(`${m.role === 'user' ? 'Q' : 'A'}: ${(m.text || '').slice(0, 300)}`);
+      });
+    }
+
+    const contextBlock = textParts.join('\n');
+    const prompt = `${FLASHCARD_PROMPT}\n\nContext from the user's session:\n${contextBlock}`;
+
+    const seenUrls = new Set();
+    screenshots.forEach((s) => {
+      const url = s.imageDataUrl || s.screenshotDataUrl;
+      if (url && !seenUrls.has(url)) {
+        seenUrls.add(url);
+        const inline = dataUrlToInlineData(url);
+        if (inline) imageParts.push(inline);
+      }
+    });
+    discoveries.forEach((d) => {
+      if (d.selectionType === 'image' && d.selectionContent && d.selectionContent.startsWith('data:') && !seenUrls.has(d.selectionContent)) {
+        seenUrls.add(d.selectionContent);
+        const inline = dataUrlToInlineData(d.selectionContent);
+        if (inline) imageParts.push(inline);
+      }
+    });
+
+    const parts = [{ text: prompt }, ...imageParts];
 
     const response = await callGemini({
       model: FLASHCARD_MODEL,
       contents: [{ role: 'user', parts }]
     });
     const result = extractGeminiParts(response);
+
+    userData.flashcards = userData.flashcards || [];
+    userData.flashcards.push({
+      id: `flashcard-${Date.now()}`,
+      imageDataUrl: result.images?.[0] || '',
+      text: result.text || '',
+      metadata: { fromUserData: true }
+    });
+    await writeUserData(userData);
+
     res.json({ text: result.text, images: result.images });
   } catch (error) {
+    console.error('flashcard:', error);
     res.status(500).json({ error: error.message });
   }
 });

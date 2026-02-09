@@ -1,8 +1,21 @@
-import React from 'react';
-import { Highlighter, Image as ImageIcon } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Highlighter, Image as ImageIcon, X } from 'lucide-react';
+
+const USER_DATA_URL = 'http://localhost:3000/user-data';
 
 export default function HelperCards({ activeTab }) {
-    if (activeTab === 'assistant') {
+    const [flashcards, setFlashcards] = useState([]);
+    const [previewImage, setPreviewImage] = useState(null);
+
+    useEffect(() => {
+        if (activeTab !== 'Discovery') return;
+        fetch(USER_DATA_URL)
+            .then((res) => res.json())
+            .then((data) => setFlashcards(Array.isArray(data.flashcards) ? data.flashcards : []))
+            .catch(() => setFlashcards([]));
+    }, [activeTab]);
+
+    if (activeTab === 'Assistant') {
         return (
             <div className="helper-cards">
                 <div className="card">
@@ -12,7 +25,7 @@ export default function HelperCards({ activeTab }) {
                         </div>
                         <div className="card-text">
                             <h3>Highlight and Ask</h3>
-                            <p>Select text or areas to get instant insights</p>
+                            <p>Select text or screenshot figure to get instant insights</p>
                         </div>
                     </div>
                 </div>
@@ -20,20 +33,59 @@ export default function HelperCards({ activeTab }) {
         );
     }
 
-    if (activeTab === 'figure') {
+    if (activeTab === 'Discovery') {
+        const latestCard = flashcards.length > 0 ? flashcards[flashcards.length - 1] : null;
+        const hasImage = latestCard?.imageDataUrl;
+
         return (
             <div className="helper-cards">
-                <div className="card">
+                <div className="card discovery-helper-card">
                     <div className="card-header">
                         <div className="card-icon-wrapper">
                             <ImageIcon size={24} className="card-icon" />
                         </div>
                         <div className="card-text">
-                            <h3>Figures & Images</h3>
-                            <p>Select, view, and edit images from the paper</p>
+                            <h3>Explore Links & Create Visual Cards</h3>
+                            <p>Find the most related info of your interest</p>
                         </div>
                     </div>
+                    <div className="discovery-helper-thumbnail-wrap">
+                        {hasImage ? (
+                            <button
+                                type="button"
+                                className="discovery-helper-thumbnail"
+                                onClick={() => setPreviewImage(latestCard.imageDataUrl)}
+                                title="View full visual card"
+                            >
+                                <img src={latestCard.imageDataUrl} alt="Latest visual card" />
+                            </button>
+                        ) : (
+                            <p className="discovery-helper-no-card">No visual card generated yet</p>
+                        )}
+                    </div>
                 </div>
+                {previewImage && (
+                    <div
+                        className="visual-card-overlay"
+                        role="dialog"
+                        aria-modal="true"
+                        onClick={() => setPreviewImage(null)}
+                    >
+                        <div className="visual-card-modal" onClick={(e) => e.stopPropagation()}>
+                            <div className="visual-card-modal-actions">
+                                <button
+                                    type="button"
+                                    className="visual-card-close-btn"
+                                    onClick={() => setPreviewImage(null)}
+                                    title="Close"
+                                >
+                                    <X size={26} />
+                                </button>
+                            </div>
+                            <img src={previewImage} alt="Visual card" className="visual-card-image" />
+                        </div>
+                    </div>
+                )}
             </div>
         );
     }

@@ -57,8 +57,11 @@ Retrieve all saved user data.
   "screenshots": [],
   "assistantChats": [],
   "notes": [],
-  "figures": [],
-  "flashcards": []
+  “noteCards[]”
+  "flashcards": [],
+  "related": [],
+  "discoveries": []
+  
 }
 ```
 
@@ -191,10 +194,10 @@ User data is stored as a single JSON file at `data/users/default.json`. The file
 ```json
 {
   "highlights": [
-    { "id": "highlight-...", "text": "...", "anchor": { "type": "text", "highlightId": "..." }, "createdAt": "..." }
+    { "id": "highlight-...", "text": "...", "anchor": { "type": "text", "pageNumber": 1, "startSpan": 157, "endSpan": 163 }, "createdAt": "..." }
   ],
   "screenshots": [
-    { "id": "screenshot-...", "imageDataUrl": "data:image/png;base64,...", "anchor": { "type": "screenshot", "rect": {} }, "createdAt": "..." }
+    { "id": "screenshot-...", "imageDataUrl": "data:image/png;base64,...", "anchor": { "type": "screenshot", "pageNumber": ... }, "createdAt": "..." }
   ],
   "assistantChats": [
     { "role": "user|assistant", "text": "...", "refs": [] }
