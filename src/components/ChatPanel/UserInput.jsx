@@ -123,7 +123,7 @@ export default function UserInput({
 
       form.append('refs', JSON.stringify(refs));
 
-      // Fire discover-related-content in parallel when we have paper text and selection
+      // Find discover-related-content in parallel when we have paper text and selection
       const hasSelection = selectedText?.trim() || screenshotImage;
       if (paperText.trim() && hasSelection) {
         const discoverPayload = {

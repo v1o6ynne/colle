@@ -7,6 +7,7 @@ import './App.css';
 export default function AcademicAssistant() {
   const [inputText, setInputText] = useState('');
   const [mode, setMode] = useState(null);
+  const [activeTab, setActiveTab] = useState('Assistant');
   const [selectedText, setSelectedText] = useState('');
   const [screenshotImage, setScreenshotImage] = useState('');
   const [screenshotClearTick, setScreenshotClearTick] = useState(0);
@@ -27,6 +28,12 @@ export default function AcademicAssistant() {
       })
       .catch(() => {});
   }, []);
+
+  useEffect(() => {
+    if (activeTab !== 'Assistant') {
+      setMode(null);
+    }
+  }, [activeTab]);
 
   const handleCopySelection = (cleanedText) => {
     const text = (cleanedText || '').trim();
@@ -108,6 +115,7 @@ export default function AcademicAssistant() {
         selectedText={selectedText}
         screenshotImage={screenshotImage}
         screenshotClearTick={screenshotClearTick}
+        activeTab={activeTab}
       />
 
    
@@ -117,6 +125,8 @@ export default function AcademicAssistant() {
         style={{ width: chatWidth }}
         inputText={inputText}
         setInputText={setInputText}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
         selectedText={selectedText}
         selectedTextId={selectedTextId}
         screenshotId={screenshotId}

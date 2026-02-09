@@ -12,6 +12,8 @@ export default function ChatPanel({
   style,
   inputText,
   setInputText,
+  activeTab,
+  setActiveTab,
   selectedTextId,
   selectedText,
   onClearSelectedText,
@@ -20,45 +22,75 @@ export default function ChatPanel({
   onClearScreenshotImage,
   paperText = ''
 }) {
-  const [activeTab, setActiveTab] = useState('Assistant');
-
   const [messages, setMessages] = useState([
     { role: 'assistant', text: "Hello! I'm ready to analyze this paper." }
   ]);
 
   const [pinnedHeight, setPinnedHeight] = useState(180);
+  const [discoveryRefreshKey, setDiscoveryRefreshKey] = useState(0);
 
  
   const historyLoadedRef = useRef(false);
+  // useEffect(() => {
+  //   if (activeTab !== 'Assistant') return;
+  //   if (historyLoadedRef.current) return;
+
+  //   const controller = new AbortController();
+
+  //   (async () => {
+  //     try {
+  //       const res = await fetch('http://localhost:3000/user-data', {
+  //         signal: controller.signal,
+  //       });
+  //       if (!res.ok) throw new Error(`GET /user-data failed: ${res.status}`);
+  //       const data = await res.json();
+
+  //       const history = data.assistantChats || [];
+
+  //       setMessages((prev) => {
+  //         if (history.length > 0) return history;
+  //         return prev;
+  //       });
+
+  //       historyLoadedRef.current = true;
+  //     } catch (e) {
+  //       if (e.name !== 'AbortError') console.error('Failed to load chat history:', e);
+  //     }
+  //   })();
+
+  //   return () => controller.abort();
+  // }, [activeTab]);
+
   useEffect(() => {
-    if (activeTab !== 'Assistant') return;
-    if (historyLoadedRef.current) return;
+  const controller = new AbortController();
 
-    const controller = new AbortController();
+  (async () => {
+    try {
+      const res = await fetch('http://localhost:3000/user-data', {
+        signal: controller.signal,
+      });
+      if (!res.ok) throw new Error(`GET /user-data failed: ${res.status}`);
+      const data = await res.json();
 
-    (async () => {
-      try {
-        const res = await fetch('http://localhost:3000/user-data', {
-          signal: controller.signal,
-        });
-        if (!res.ok) throw new Error(`GET /user-data failed: ${res.status}`);
-        const data = await res.json();
-
+      if (activeTab === 'Assistant') {
         const history = data.assistantChats || [];
-
-        setMessages((prev) => {
-          if (history.length > 0) return history;
-          return prev;
-        });
-
-        historyLoadedRef.current = true;
-      } catch (e) {
-        if (e.name !== 'AbortError') console.error('Failed to load chat history:', e);
+        setMessages(
+          history.length > 0
+            ? history
+            : [{ role: 'assistant', text: "Hello! I'm ready to analyze this paper." }]
+        );
       }
-    })();
 
-    return () => controller.abort();
-  }, [activeTab]);
+      if (activeTab === 'Discovery') {
+        setDiscoveryRefreshKey((k) => k + 1);
+      }
+    } catch (e) {
+      if (e.name !== 'AbortError') console.error('Tab load failed:', e);
+    }
+  })();
+
+  return () => controller.abort();
+}, [activeTab]);
 
   const addAssistant = (text) => {
     setMessages((prev) => [...prev, { role: 'assistant', text }]);
@@ -69,6 +101,7 @@ export default function ChatPanel({
   };
 
   const hasSelection = (!!selectedText) || !!screenshotImage;
+  const showPinnedContext = activeTab === 'Assistant' && hasSelection;
 
   const startResizePinned = (e) => {
     e.preventDefault();
@@ -98,7 +131,7 @@ export default function ChatPanel({
     <aside className="chat-panel" style={style}>
       <ChatHeader activeTab={activeTab} setActiveTab={setActiveTab} />
 
-      {hasSelection && (
+      {showPinnedContext && (
         <>
           <div
             className="chat-pinned-selections"
@@ -129,7 +162,8 @@ export default function ChatPanel({
 
       <div className="chat-content">
         {activeTab === 'Discovery' ? (
-          <DiscoveryList />
+          // <DiscoveryList />
+          <DiscoveryList refreshKey={discoveryRefreshKey} />
         ) : (
           <>
             <HelperCards activeTab={activeTab} />

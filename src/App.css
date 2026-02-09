@@ -92,6 +92,51 @@ body, html {
     gap: 10px;
 }
 
+.icon-btn-wrap {
+    display: inline-flex;
+    align-items: center;
+    position: relative;
+}
+
+.icon-btn-wrap.tooltip-disabled::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%) translateY(-4px);
+    background: #111827;
+    color: #f9fafb;
+    font-size: 11px;
+    padding: 6px 8px;
+    border-radius: 6px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.12s ease, transform 0.12s ease;
+    z-index: 10;
+}
+
+.icon-btn-wrap.tooltip-disabled::before {
+    content: '';
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 50%;
+    transform: translateX(-50%) translateY(-4px);
+    border-width: 0 4px 4px 4px;
+    border-style: solid;
+    border-color: transparent transparent #111827 transparent;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.12s ease, transform 0.12s ease;
+    z-index: 10;
+}
+
+.icon-btn-wrap.tooltip-disabled:hover::after,
+.icon-btn-wrap.tooltip-disabled:hover::before {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
 .toolbar-controls svg {
     color: var(--text-light);
     cursor: pointer;
@@ -114,6 +159,18 @@ body, html {
 .icon-btn:hover {
     background: var(--bg-gray);
     color: var(--primary-red);
+}
+
+.icon-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+    background: none;
+    color: var(--text-light);
+}
+
+.icon-btn:disabled:hover {
+    background: none;
+    color: var(--text-light);
 }
 
 .icon-btn.active {

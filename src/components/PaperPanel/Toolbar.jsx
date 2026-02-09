@@ -1,7 +1,9 @@
 import React from 'react';
 import { Copy, Download, Camera } from 'lucide-react';
 
-export default function Toolbar({ numPages, mode, onModeChange }) {
+export default function Toolbar({ numPages, mode, onModeChange, activeTab }) {
+    const isAssistantTab = activeTab === 'Assistant';
+    const disabledTitle = 'Select and ask function only supported in Assistant mode';
     const handleModeChange = (newMode) => {
         const finalMode = mode === newMode ? null : newMode;
         onModeChange?.(finalMode);
@@ -14,20 +16,30 @@ export default function Toolbar({ numPages, mode, onModeChange }) {
                 <span className="page-count"> {numPages || '--'} Pages</span>
             </div>
             <div className="toolbar-controls">
-                <button 
-                    onClick={() => handleModeChange('copy')} 
-                    className={`icon-btn ${mode === 'copy' ? 'active' : ''}`}
-                    title="Copy Mode"
+                <span
+                    className={`icon-btn-wrap ${!isAssistantTab ? 'tooltip-disabled' : ''}`}
+                    data-tooltip={isAssistantTab ? 'Copy Mode' : disabledTitle}
                 >
-                    <Copy size={18} />
-                </button>
-                <button 
-                    onClick={() => handleModeChange('screenshot')} 
-                    className={`icon-btn ${mode === 'screenshot' ? 'active' : ''}`}
-                    title="Screenshot Mode"
+                    <button 
+                        onClick={() => handleModeChange('copy')} 
+                        className={`icon-btn ${mode === 'copy' ? 'active' : ''}`}
+                        disabled={!isAssistantTab}
+                    >
+                        <Copy size={18} />
+                    </button>
+                </span>
+                <span
+                    className={`icon-btn-wrap ${!isAssistantTab ? 'tooltip-disabled' : ''}`}
+                    data-tooltip={isAssistantTab ? 'Screenshot Mode' : disabledTitle}
                 >
-                    <Camera size={18} />
-                </button>
+                    <button 
+                        onClick={() => handleModeChange('screenshot')} 
+                        className={`icon-btn ${mode === 'screenshot' ? 'active' : ''}`}
+                        disabled={!isAssistantTab}
+                    >
+                        <Camera size={18} />
+                    </button>
+                </span>
                 <button className="icon-btn" title="Download PDF">
                     <Download size={18} />
                 </button>

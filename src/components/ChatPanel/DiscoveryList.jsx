@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { RefreshCw, ChevronDown, ChevronRight, ThumbsUp, ThumbsDown, Download, X, ImageIcon } from 'lucide-react';
 
 const USER_DATA_URL = 'http://localhost:3000/user-data';
@@ -99,7 +99,7 @@ function DiscoveryItem({ discovery, discoveryIndex, onLikeChange }) {
   );
 }
 
-export default function DiscoveryList() {
+export default function DiscoveryList({ refreshKey = 0 }) {
   const [discoveries, setDiscoveries] = useState([]);
   const [loading, setLoading] = useState(false);
   const [generating, setGenerating] = useState(false);
@@ -118,6 +118,11 @@ export default function DiscoveryList() {
       setLoading(false);
     }
   }, []);
+
+  useEffect(() => {
+    refresh();
+  }, [refreshKey, refresh]);
+
 
   const persistDiscoveries = useCallback((updated) => {
     fetch(USER_DATA_URL, {
