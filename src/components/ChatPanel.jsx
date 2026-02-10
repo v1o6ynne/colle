@@ -8,6 +8,9 @@ import SelectImagesBox from './ChatPanel/SelectImagesBox';
 import UserInput from './ChatPanel/UserInput';
 import DiscoveryList from './ChatPanel/DiscoveryList';
 
+const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:3000";
+
+
 export default function ChatPanel({
   style,
   inputText,
@@ -78,7 +81,7 @@ export default function ChatPanel({
 
   (async () => {
     try {
-      const res = await fetch('http://localhost:3000/user-data', {
+      const res = await fetch('${API_BASE}/user-data', {
         signal: controller.signal,
       });
       if (!res.ok) throw new Error(`GET /user-data failed: ${res.status}`);
