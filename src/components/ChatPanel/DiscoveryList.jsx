@@ -4,6 +4,7 @@ import ReactMarkdown from 'react-markdown';
 
 const USER_DATA_URL = 'http://localhost:3000/user-data';
 const FLASHCARD_URL = 'http://localhost:3000/flashcard';
+const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:3000";
 
 function VisualCardModal({ imageDataUrl, onClose, onDownload }) {
   if (!imageDataUrl) return null;
@@ -193,7 +194,7 @@ export default function DiscoveryList({ refreshKey = 0 }) {
   const refresh = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch(USER_DATA_URL);
+      const res = await fetch('${API_BASE}/user-data');
       const data = await res.json();
       setDiscoveries(Array.isArray(data.discoveries) ? data.discoveries : []);
     } catch (err) {
@@ -210,7 +211,7 @@ export default function DiscoveryList({ refreshKey = 0 }) {
 
 
   const persistDiscoveries = useCallback((updated) => {
-    fetch(USER_DATA_URL, {
+    fetch('${API_BASE}/user-data', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ mode: 'patch', data: { discoveries: updated } })
@@ -243,7 +244,7 @@ export default function DiscoveryList({ refreshKey = 0 }) {
           screenshotDataUrl: d.selectionType === 'image' ? d.selectionContent : undefined
         };
       });
-      const res = await fetch(FLASHCARD_URL, {
+      const res = await fetch('${API_BASE}/flashcard', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ noteCards })
