@@ -4,7 +4,8 @@ const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:3000";
 
 
 const USER_DATA_URL = 'http://localhost:3000/user-data';
-const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:3000";
+import { API_BASE } from "../../apiBase";
+
 
 
 export default function HelperCards({ activeTab }) {
