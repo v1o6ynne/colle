@@ -81,7 +81,7 @@ export default function ChatPanel({
 
   (async () => {
     try {
-      const res = await fetch('${API_BASE}/user-data', {
+      const res = await fetch(`${API_BASE}/user-data`, {
         signal: controller.signal,
       });
       if (!res.ok) throw new Error(`GET /user-data failed: ${res.status}`);
