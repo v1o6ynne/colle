@@ -4,7 +4,9 @@ import ReactMarkdown from 'react-markdown';
 
 const USER_DATA_URL = 'http://localhost:3000/user-data';
 const FLASHCARD_URL = 'http://localhost:3000/flashcard';
-const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:3000";
+
+import { API_BASE } from "../../apiBase";
+
 
 function VisualCardModal({ imageDataUrl, onClose, onDownload }) {
   if (!imageDataUrl) return null;
