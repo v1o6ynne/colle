@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Highlighter, Image as ImageIcon, X } from 'lucide-react';
+const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:3000";
+
 
 const USER_DATA_URL = 'http://localhost:3000/user-data';
 
@@ -9,7 +11,7 @@ export default function HelperCards({ activeTab }) {
 
     useEffect(() => {
         if (activeTab !== 'Discovery') return;
-        fetch(USER_DATA_URL)
+        fetch(${API_BASE}/user-data)
             .then((res) => res.json())
             .then((data) => setFlashcards(Array.isArray(data.flashcards) ? data.flashcards : []))
             .catch(() => setFlashcards([]));
