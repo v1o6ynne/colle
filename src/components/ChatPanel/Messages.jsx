@@ -19,7 +19,7 @@ export default function Messages({ activeTab, messages = [] }) {
     if (!ref?.id) return;
 
     try {
-      const res = await fetch(${API_BASE}/user-data);
+      const res = await fetch('${API_BASE}/user-data');
       const data = await res.json();
 
       // ✅ 先按 highlight 查（有就当 text）
