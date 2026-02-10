@@ -15,7 +15,7 @@ const app = express();
 
 const allowedOrigins = new Set([
   "http://localhost:5173",
-  "https://colle-two.vercel.app",
+  "https://colle-eight.vercel.app/",
 ]);
 
 app.use(cors({
