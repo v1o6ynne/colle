@@ -10,7 +10,7 @@ export default function HelperCards({ activeTab }) {
 
     useEffect(() => {
         if (activeTab !== 'Discovery') return;
-        fetch('${API_BASE}/user-data')
+        fetch(`${API_BASE}/user-data`)
             .then((res) => res.json())
             .then((data) => setFlashcards(Array.isArray(data.flashcards) ? data.flashcards : []))
             .catch(() => setFlashcards([]));
