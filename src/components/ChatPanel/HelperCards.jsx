@@ -1,9 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Highlighter, Image as ImageIcon, X } from 'lucide-react';
-const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:3000";
-
-
-const USER_DATA_URL = 'http://localhost:3000/user-data';
 import { API_BASE } from "../../apiBase";
 
 
