@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { ArrowUp } from 'lucide-react';
-const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:3000";
+
+import { API_BASE } from "../../apiBase";
+
 
 
 export default function UserInput({
