@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { ArrowUp } from 'lucide-react';
+const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:3000";
+
 
 export default function UserInput({
   inputText,
@@ -36,7 +38,7 @@ export default function UserInput({
     createdAt: new Date().toISOString(),
   };
 
-    const currentRes = await fetch('http://localhost:3000/user-data');
+    const currentRes = await fetch('${API_BASE}/user-data');
     const current = await currentRes.json();
 
     const exists = (current.screenshots || []).some(
@@ -44,7 +46,7 @@ export default function UserInput({
     );
     if (exists) return;
 
-    await fetch('http://localhost:3000/user-data', {
+    await fetch('${API_BASE}/user-data', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -67,7 +69,7 @@ export default function UserInput({
       createdAt: new Date().toISOString()
     };
 
-    const currentRes = await fetch('http://localhost:3000/user-data');
+    const currentRes = await fetch('${API_BASE}/user-data');
     const current = await currentRes.json();
 
     const exists = (current.highlights || []).some(
@@ -75,7 +77,7 @@ export default function UserInput({
     );
     if (exists) return;
 
-    await fetch('http://localhost:3000/user-data', {
+    await fetch('${API_BASE}/user-data', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -144,14 +146,14 @@ export default function UserInput({
           selectedTexts: selectedText?.trim() ? [selectedText.trim()] : [],
           imageDataUrls: screenshotImage ? [screenshotImage] : []
         };
-        fetch('http://localhost:3000/discover-related-content', {
+        fetch('${API_BASE}/discover-related-content', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(discoverPayload)
         }).catch((err) => console.error('discover-related-content:', err));
       }
 
-      const res = await fetch('http://localhost:3000/assistant-chat', {
+      const res = await fetch('${API_BASE}/assistant-chat', {
         method: 'POST',
         body: form
       });
