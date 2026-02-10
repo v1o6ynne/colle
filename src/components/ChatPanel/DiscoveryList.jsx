@@ -196,7 +196,7 @@ export default function DiscoveryList({ refreshKey = 0 }) {
   const refresh = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch('${API_BASE}/user-data');
+      const res = await fetch(`${API_BASE}/user-data`);
       const data = await res.json();
       setDiscoveries(Array.isArray(data.discoveries) ? data.discoveries : []);
     } catch (err) {
@@ -213,7 +213,7 @@ export default function DiscoveryList({ refreshKey = 0 }) {
 
 
   const persistDiscoveries = useCallback((updated) => {
-    fetch('${API_BASE}/user-data', {
+    fetch(`${API_BASE}/user-data`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ mode: 'patch', data: { discoveries: updated } })
@@ -246,7 +246,7 @@ export default function DiscoveryList({ refreshKey = 0 }) {
           screenshotDataUrl: d.selectionType === 'image' ? d.selectionContent : undefined
         };
       });
-      const res = await fetch('${API_BASE}/flashcard', {
+      const res = await fetch(`${API_BASE}/flashcard`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ noteCards })
