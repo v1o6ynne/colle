@@ -1,6 +1,8 @@
 
 import React, { useCallback } from "react";
 import ReactMarkdown from "react-markdown";
+const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:3000";
+
 
 const USER_DATA_URL = "http://localhost:3000/user-data";
 
@@ -17,7 +19,7 @@ export default function Messages({ activeTab, messages = [] }) {
     if (!ref?.id) return;
 
     try {
-      const res = await fetch(USER_DATA_URL);
+      const res = await fetch(${API_BASE}/user-data);
       const data = await res.json();
 
       // ✅ 先按 highlight 查（有就当 text）
