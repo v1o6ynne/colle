@@ -8,7 +8,7 @@ import SelectImagesBox from './ChatPanel/SelectImagesBox';
 import UserInput from './ChatPanel/UserInput';
 import DiscoveryList from './ChatPanel/DiscoveryList';
 
-const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:3000";
+import { API_BASE } from "../apiBase"; 
 
 
 export default function ChatPanel({
