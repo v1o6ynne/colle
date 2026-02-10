@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import PaperPanel from './components/PaperPanel';
 import ChatPanel from './components/ChatPanel';
 import './App.css';
+const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:3000";
 
 export default function AcademicAssistant() {
   const [inputText, setInputText] = useState('');
@@ -32,7 +33,7 @@ export default function AcademicAssistant() {
   }, []);
 
   useEffect(() => {
-    fetch('http://localhost:3000/user-data')
+    fetch('${API_BASE}/user-data')
       .then((r) => r.json())
       .then((data) => {
         if (data.paperContent && typeof data.paperContent === 'string') {
