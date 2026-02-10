@@ -1,7 +1,7 @@
 
 import React, { useCallback } from "react";
 import ReactMarkdown from "react-markdown";
-const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:3000";
+import { API_BASE } from "../../apiBase";
 
 
 //const USER_DATA_URL = "http://localhost:3000/user-data";
